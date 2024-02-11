@@ -17,4 +17,13 @@ class UsersRepository:
             self.db[user.id] = user
 
     def get_user(self, user_id):
-        return self.db.get_user(user_id)
+        return self.db.get(user_id)
+
+    def get_all_users(self):
+        return list(self.db.values())
+
+    def create_user(self, name: str):
+        new_user_id = max(self.db.keys()) + 1
+        new_user = UserSchema(id=new_user_id, name=name)
+        self.db[new_user_id] = new_user
+        return new_user

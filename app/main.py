@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
+from schemas.Schemas import CreateUserSchema
+
 
 app = FastAPI()
 users_repository = UsersRepository()
@@ -15,7 +17,16 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/user/{user_id}")
+@app.get("/users/{user_id}")
 async def get_users(user_id: int):
-    print(f"holaaa, acaa desde el main {user_id}")
     return users_controller.handle_get_user(user_id)
+
+
+@app.get("/users")
+async def get_all_users():
+    return users_controller.handle_get_all_users()
+
+
+@app.post("/users")
+async def create_user(user_data: CreateUserSchema):
+    return users_controller.handle_create_user(user_data.dict())

@@ -11,3 +11,10 @@ class UsersService:
         if not user:
             raise UserNotFound(user_id)
         return user
+
+    def get_all_users(self):
+        return self.user_repository.get_all_users()
+
+    def create_user(self, user_data: dict):
+        name = user_data.get("name")
+        return self.user_repository.create_user(name)

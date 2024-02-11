@@ -16,5 +16,7 @@ class UsersController:
 
     def handle_create_user(self, user_data: dict):
         self.users_service.create_user(user_data)
-        return {"message": "User created successfully",
-                "status": status.HTTP_201_CREATED}
+        return {
+            "message": "User created successfully",
+            "status": status.HTTP_201_CREATED,
+        }

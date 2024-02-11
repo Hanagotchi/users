@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from controller.Users import UsersController
 from service.Users import UsersService

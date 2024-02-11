@@ -10,7 +10,7 @@ class UsersRepository:
         default_users_data = [
             {"id": 1, "name": "John"},
             {"id": 2, "name": "Alice"},
-            {"id": 3, "name": "Bob"}
+            {"id": 3, "name": "Bob"},
         ]
         for user_data in default_users_data:
             user = UserSchema(**user_data)

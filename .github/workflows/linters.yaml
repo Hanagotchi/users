@@ -30,7 +30,6 @@ jobs:
         with:
           max-line-length: "78"
 
-      - name: Run pylint
-        uses: cclauss/GitHub-Action-for-Pylint@latest
-        with:
-          pylint_version: "latest"
+      - name: GitHub Action for pylint
+        uses: cclauss/GitHub-Action-for-pylint@0.7.0
+            

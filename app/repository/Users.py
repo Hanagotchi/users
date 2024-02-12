@@ -1,29 +1,47 @@
-from schemas.Schemas import UserSchema
+from sqlalchemy import create_engine, engine
+from sqlalchemy.orm import Session
+import os
+from models.users import User
 
 
 class UsersRepository:
+    db_url = engine.URL.create(
+        "postgresql",
+        database=os.environ["POSTGRES_DB"],
+        username=os.environ["POSTGRES_USER"],
+        password=os.environ["POSTGRES_PASSWORD"],
+        host=os.environ["POSTGRES_HOST"],
+        port=os.environ["POSTGRES_PORT"]
+    )
+
+    engine = create_engine(db_url)
+
     def __init__(self):
-        self.db = {}
-        self._populate_default_users()
+        self.conn = self.engine.connect()
+        self.session = Session(self.engine)
 
-    def _populate_default_users(self):
-        default_users_data = [
-            {"id": 1, "name": "John"},
-            {"id": 2, "name": "Alice"},
-            {"id": 3, "name": "Bob"},
-        ]
-        for user_data in default_users_data:
-            user = UserSchema(**user_data)
-            self.db[user.id] = user
+    def shutdown(self):
+        self.conn.close()
+        self.session.close()
 
-    def get_user(self, user_id):
-        return self.db.get(user_id)
+    def rollback(self):
+        self.session.rollback()
+
+    def get_user(self, user_id: int):
+        user = self.session.query(User).filter_by(id=user_id).first()
+        return user.__dict__
 
     def get_all_users(self):
-        return list(self.db.values())
+        users = self.session.query(User).all()
+        return self.__parse_result(users)
 
     def create_user(self, name: str):
-        new_user_id = max(self.db.keys()) + 1
-        new_user = UserSchema(id=new_user_id, name=name)
-        self.db[new_user_id] = new_user
-        return new_user
+        new_user = User(name=name)
+        self.session.add(new_user)
+        self.session.commit()
+        return
+
+    def __parse_result(self, result):
+        if not result:
+            return []
+        return [r.__dict__ for r in result]

@@ -29,7 +29,7 @@ class UsersRepository:
 
     def get_user(self, user_id: int):
         user = self.session.query(User).filter_by(id=user_id).first()
-        return user.__dict__
+        return user.__dict__ if user else None
 
     def get_all_users(self):
         users = self.session.query(User).all()

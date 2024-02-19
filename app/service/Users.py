@@ -3,6 +3,7 @@ from repository.Users import UsersRepository
 import requests
 import os
 
+
 def get_access_token(authorization_code):
     token_url = "https://oauth2.googleapis.com/token"
     payload = {
@@ -22,7 +23,8 @@ def get_access_token(authorization_code):
 def get_user_info(access_token):
     user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(user_info_url, headers=headers)
+    params = {"fields": "id,email,name,picture"}
+    response = requests.get(user_info_url, headers=headers, params=params)
     if response.status_code == 200:
         return response.json()
     else:
@@ -52,4 +54,6 @@ class UsersService:
 
         user = self.user_repository.get_user_by_name(user_info["email"])
         if user is None:
-            self.user_repository.create_user(user_info["email"])
+            user = self.user_repository.create_user(user_info["email"])
+
+        return user

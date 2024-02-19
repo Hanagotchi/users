@@ -43,7 +43,7 @@ class UsersRepository:
         new_user = User(name=name)
         self.session.add(new_user)
         self.session.commit()
-        return
+        return new_user
 
     def __parse_result(self, result):
         if not result:

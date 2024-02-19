@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from fastapi import Body
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema
+from schemas.Schemas import LoginRequest
 
 
 app = FastAPI()
@@ -32,5 +34,5 @@ async def create_user(user_data: CreateUserSchema):
 
 
 @app.post("/login")
-def login_with_google(auth_code: str):
-    return users_controller.handle_login(auth_code)
+def login_with_google(req: LoginRequest = Body(...)):
+    return users_controller.handle_login(req.auth_code)

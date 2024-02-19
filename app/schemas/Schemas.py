@@ -8,3 +8,7 @@ class UserSchema(BaseModel):
 
 class CreateUserSchema(BaseModel):
     name: str
+
+
+class LoginRequest(BaseModel):
+    auth_code: str

@@ -31,6 +31,10 @@ class UsersRepository:
         user = self.session.query(User).filter_by(id=user_id).first()
         return user.__dict__ if user else None
 
+    def get_user_by_name(self, name: str):
+        user = self.session.query(User).filter_by(name=name).first()
+        return user.__dict__ if user else None
+
     def get_all_users(self):
         users = self.session.query(User).all()
         return self.__parse_result(users)

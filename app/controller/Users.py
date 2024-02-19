@@ -20,3 +20,10 @@ class UsersController:
             "message": "User created successfully",
             "status": status.HTTP_201_CREATED,
         }
+
+    def handle_login(self, auth_code: str):
+        user = self.users_service.login(auth_code)
+        return {
+            "message": user,
+            "status": status.HTTP_200_OK,
+        }

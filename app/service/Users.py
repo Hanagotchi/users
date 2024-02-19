@@ -1,6 +1,32 @@
 from exceptions.UserException import UserNotFound
 from repository.Users import UsersRepository
-# from repository.UsersLocal import UsersRepository
+import requests
+import os
+
+def get_access_token(authorization_code):
+    token_url = "https://oauth2.googleapis.com/token"
+    payload = {
+        "client_id": os.environ["GOOGLE_CLIENT_ID"],
+        "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
+        "code": authorization_code,
+        "grant_type": "authorization_code",
+        "redirect_uri": "http://localhost:8000/auth/google/callback"
+    }
+    response = requests.post(token_url, data=payload)
+    if response.status_code == 200:
+        return response.json().get("access_token")
+    else:
+        return None
+
+
+def get_user_info(access_token):
+    user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(user_info_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
 
 
 class UsersService:
@@ -19,3 +45,11 @@ class UsersService:
     def create_user(self, user_data: dict):
         name = user_data.get("name")
         return self.user_repository.create_user(name)
+
+    def login(self, auth_code: str):
+        access_token = get_access_token(auth_code)
+        user_info = get_user_info(access_token)
+
+        user = self.user_repository.get_user_by_name(user_info["email"])
+        if user is None:
+            self.user_repository.create_user(user_info["email"])

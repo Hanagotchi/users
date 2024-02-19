@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
-# from repository.UsersLocal import UsersRepository
 from schemas.Schemas import CreateUserSchema
 
 
@@ -30,3 +29,8 @@ async def get_all_users():
 @app.post("/users")
 async def create_user(user_data: CreateUserSchema):
     return users_controller.handle_create_user(user_data.dict())
+
+
+@app.post("/login")
+def login_with_google(auth_code: str):
+    return users_controller.handle_login(auth_code)

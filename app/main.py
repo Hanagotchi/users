@@ -34,5 +34,5 @@ async def create_user(user_data: CreateUserSchema):
 
 
 @app.post("/login")
-def login_with_google(req: LoginRequest = Body(...)):
-    return users_controller.handle_login(req.auth_code)
+def login_with_google(request: LoginRequest):
+    return users_controller.handle_login(request.auth_code)

@@ -39,8 +39,8 @@ class UsersRepository:
         users = self.session.query(User).all()
         return self.__parse_result(users)
 
-    def create_user(self, name: str):
-        new_user = User(name=name)
+    def create_user(self, name: str, mail: str):
+        new_user = User(name=name, mail=mail)
         self.session.add(new_user)
         self.session.commit()
         return new_user

@@ -46,7 +46,8 @@ class UsersService:
 
     def create_user(self, user_data: dict):
         name = user_data.get("name")
-        return self.user_repository.create_user(name)
+        mail = user_data.get("mail")
+        return self.user_repository.create_user(name, mail)
 
     def login(self, auth_code: str):
         access_token = get_access_token(auth_code)

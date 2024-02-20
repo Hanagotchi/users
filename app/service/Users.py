@@ -45,16 +45,24 @@ class UsersService:
         return self.user_repository.get_all_users()
 
     def create_user(self, user_data: dict):
-        name = user_data.get("name")
-        mail = user_data.get("mail")
-        return self.user_repository.create_user(name, mail)
+        email = user_data.get("email")
+        return self.user_repository.create_user(email)
 
     def login(self, auth_code: str):
         access_token = get_access_token(auth_code)
         user_info = get_user_info(access_token)
 
-        user = self.user_repository.get_user_by_name(user_info["email"])
+        user = self.user_repository.get_user_by_email(user_info.get("email"))
+
         if user is None:
-            user = self.user_repository.create_user(user_info["email"])
+            user_data = {'email': user_info.get("email")}
+            if user_info.get("genre") is not None:
+                user_data['genre'] = user_info.get("genre")
+            if user_info.get("name") is not None:
+                user_data['name'] = user_info.get("name")
+            if user_info.get("picture") is not None:
+                user_data['photo'] = user_info.get("picture")
+
+            user = self.user_repository.create_user(**user_data)
 
         return user

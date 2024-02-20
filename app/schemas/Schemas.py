@@ -4,11 +4,13 @@ from pydantic import BaseModel
 class UserSchema(BaseModel):
     id: int
     name: str
+    email: str
+    genre: str
+    photo: str
 
 
 class CreateUserSchema(BaseModel):
-    name: str
-    mail: str
+    email: str
 
 
 class LoginRequest(BaseModel):

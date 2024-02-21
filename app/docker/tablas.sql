@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS dev.users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
-    genre VARCHAR(20),
+    gender VARCHAR(20),
     photo VARCHAR(255)
 );
 

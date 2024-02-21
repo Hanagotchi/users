@@ -42,14 +42,14 @@ class UsersRepository:
 
     def create_user(self, email: str,
                     name: Optional[str] = None,
-                    genre: Optional[str] = None,
+                    gender: Optional[str] = None,
                     photo: Optional[str] = None):
         user_data = {'email': email}
 
         if name is not None:
             user_data['name'] = name
-        if genre is not None:
-            user_data['genre'] = genre
+        if gender is not None:
+            user_data['gender'] = gender
         if photo is not None:
             user_data['photo'] = photo
 

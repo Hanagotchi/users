@@ -8,5 +8,5 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=True)
     email = Column(String, nullable=False)
-    genre = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
     photo = Column(String, nullable=True)

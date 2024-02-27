@@ -30,10 +30,12 @@ class UsersService:
         user_info = self._get_user_info(access_token)
         user = self.user_repository.get_user_by_email(user_info["email"])
 
-        if user is None:
-            user = self.user_repository.create_user(**user_info)
+        if user is not None:
+            return user, False
 
-        return user
+        self.user_repository.create_user(**user_info)
+        user = self.user_repository.get_user_by_email(user_info["email"])
+        return user, True
 
     def _get_access_token(self, authorization_code):
         token_url = "https://oauth2.googleapis.com/token"

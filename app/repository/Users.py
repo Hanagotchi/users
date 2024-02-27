@@ -56,7 +56,7 @@ class UsersRepository:
         new_user = User(**user_data)
         self.session.add(new_user)
         self.session.commit()
-        return new_user
+        return new_user.__dict__
 
     def __parse_result(self, result):
         if not result:

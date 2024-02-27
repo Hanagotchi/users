@@ -22,8 +22,6 @@ class UsersController:
         }
 
     def handle_login(self, auth_code: str):
-        user = self.users_service.login(auth_code)
-        return {
-            "message": user,
-            "status": status.HTTP_200_OK,
-        }
+        user, first_login = self.users_service.login(auth_code)
+        status_code = status.HTTP_201_CREATED if first_login else status.HTTP_200_OK
+        return {"message": user, "status": status_code}

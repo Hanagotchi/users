@@ -1,6 +1,8 @@
 from exceptions.UserException import UserNotFound
+from exceptions.LoginException import AuthenticationError
 from repository.Users import UsersRepository
-# from repository.UsersLocal import UsersRepository
+import requests
+import os
 
 
 class UsersService:
@@ -17,5 +19,53 @@ class UsersService:
         return self.user_repository.get_all_users()
 
     def create_user(self, user_data: dict):
-        name = user_data.get("name")
-        return self.user_repository.create_user(name)
+        email = user_data.get("email")
+        return self.user_repository.create_user(email)
+
+    def login(self, auth_code: str):
+        access_token = self._get_access_token(auth_code)
+        if access_token is None:
+            raise AuthenticationError("Authentication code is invalid")
+
+        user_info = self._get_user_info(access_token)
+        user = self.user_repository.get_user_by_email(user_info["email"])
+
+        if user is not None:
+            return user, False
+
+        self.user_repository.create_user(**user_info)
+        user = self.user_repository.get_user_by_email(user_info["email"])
+        return user, True
+
+    def _get_access_token(self, authorization_code):
+        token_url = "https://oauth2.googleapis.com/token"
+        payload = {
+            "client_id": os.environ["GOOGLE_CLIENT_ID"],
+            "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
+            "code": authorization_code,
+            "grant_type": "authorization_code",
+            "redirect_uri": "http://localhost:8000/auth/google/callback"
+        }
+        response = requests.post(token_url, data=payload)
+        if response.status_code == 200:
+            return response.json().get("access_token")
+        else:
+            return None
+
+    def _get_user_info(self, access_token):
+        user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
+        headers = {"Authorization": f"Bearer {access_token}"}
+        params = {"fields": "id,email,name,picture,gender"}
+        response = requests.get(user_info_url, headers=headers, params=params)
+
+        if response.status_code != 200:
+            raise AuthenticationError()
+
+        user_data = {'email': response.json().get("email")}
+        if response.json().get("gender") is not None:
+            user_data['gender'] = response.json().get("gender")
+        if response.json().get("name") is not None:
+            user_data['name'] = response.json().get("name")
+        if response.json().get("picture") is not None:
+            user_data['photo'] = response.json().get("picture")
+        return user_data

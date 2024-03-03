@@ -6,7 +6,7 @@ from models.users import User
 
 
 class UsersRepository:
-    db_url = environ.get("HEROKU_DATABASE_URL", engine.URL.create(
+    db_url = environ.get("DATABASE_URL", engine.URL.create(
         "postgres",
         database=environ.get("USERS_DB", "users"),
         username=environ.get("POSTGRES_USER", "user"),

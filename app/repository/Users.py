@@ -8,7 +8,7 @@ from models.users import User
 class UsersRepository:
     db_url = environ.get("DATABASE_URL", engine.URL.create(
         "postgres",
-        database=environ.get("USERS_DB", "users"),
+        database=environ.get("POSTGRES_DB", "dev"),
         username=environ.get("POSTGRES_USER", "user"),
         password=environ.get("POSTGRES_PASSWORD", "1234"),
         host=environ.get("POSTGRES_HOST", "sql"),

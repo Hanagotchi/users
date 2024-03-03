@@ -1,0 +1,19 @@
+FROM python:3.11-slim-buster
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get -y install libpq-dev gcc \
+    && pip install psycopg2
+
+COPY requirements.txt ./
+
+RUN pip install -r requirements.txt
+
+EXPOSE ${PORT}
+
+COPY app/ ./
+COPY ./entrypoint-heroku.sh .
+RUN chmod +x ./entrypoint-heroku.sh
+
+CMD ["./entrypoint-heroku.sh"]

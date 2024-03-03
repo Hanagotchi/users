@@ -1,19 +1,19 @@
 from sqlalchemy import create_engine, engine
 from sqlalchemy.orm import Session
-import os
+from os import environ
 from typing import Optional
 from models.users import User
 
 
 class UsersRepository:
-    db_url = engine.URL.create(
-        "postgresql",
-        database=os.environ["POSTGRES_DB"],
-        username=os.environ["POSTGRES_USER"],
-        password=os.environ["POSTGRES_PASSWORD"],
-        host=os.environ["POSTGRES_HOST"],
-        port=os.environ["POSTGRES_PORT"]
-    )
+    db_url = environ.get("HEROKU_DATABASE_URL", engine.URL.create(
+        "postgres",
+        database=environ.get("USERS_DB", "users"),
+        username=environ.get("POSTGRES_USER", "user"),
+        password=environ.get("POSTGRES_PASSWORD", "1234"),
+        host=environ.get("POSTGRES_HOST", "sql"),
+        port=environ.get("POSTGRES_PORT", "5432")
+    )).replace("postgres://", "postgresql://", 1)
 
     engine = create_engine(db_url)
 

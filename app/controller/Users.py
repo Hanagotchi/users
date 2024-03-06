@@ -23,6 +23,7 @@ class UsersController:
 
     def handle_login(self, auth_code: str):
         user = self.users_service.login(auth_code)
+        print(user)
         return {
             "message": user,
             "status": status.HTTP_200_OK,

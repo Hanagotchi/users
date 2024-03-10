@@ -14,4 +14,4 @@ EXPOSE ${PORT}
 
 COPY app/ ./
 
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "${PORT}"]
+CMD ["sh", "-c", "uvicorn main:app --reload --host 0.0.0.0 --port ${PORT}"]

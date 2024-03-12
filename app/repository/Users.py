@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from os import environ
 from typing import Optional
@@ -6,7 +6,8 @@ from models.users import User
 
 
 class UsersRepository:
-    db_url = environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
+    db_url = environ.get("DATABASE_URL") \
+                .replace("postgres://", "postgresql://", 1)
 
     engine = create_engine(db_url)
 

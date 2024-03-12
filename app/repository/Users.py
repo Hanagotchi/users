@@ -6,8 +6,9 @@ from models.users import User
 
 
 class UsersRepository:
-    db_url = environ.get("DATABASE_URL") \
-                .replace("postgres://", "postgresql://", 1)
+    db_url = environ.get("DATABASE_URL").replace("postgres://", 
+                                                 "postgresql://", 
+                                                 1)
 
     engine = create_engine(db_url)
 

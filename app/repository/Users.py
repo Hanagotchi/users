@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, engine
 from sqlalchemy.orm import Session
 from os import environ
 from typing import Optional
@@ -6,8 +6,7 @@ from models.users import User
 
 
 class UsersRepository:
-    db_url = environ.get("DATABASE_URL") \
-            .replace("postgres://", "postgresql://", 1)
+    db_url = environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
 
     engine = create_engine(db_url)
 
@@ -34,21 +33,18 @@ class UsersRepository:
         users = self.session.query(User).all()
         return self.__parse_result(users)
 
-    def create_user(
-        self,
-        email: str,
-        name: Optional[str] = None,
-        gender: Optional[str] = None,
-        photo: Optional[str] = None,
-    ):
-        user_data = {"email": email}
+    def create_user(self, email: str,
+                    name: Optional[str] = None,
+                    gender: Optional[str] = None,
+                    photo: Optional[str] = None):
+        user_data = {'email': email}
 
         if name is not None:
-            user_data["name"] = name
+            user_data['name'] = name
         if gender is not None:
-            user_data["gender"] = gender
+            user_data['gender'] = gender
         if photo is not None:
-            user_data["photo"] = photo
+            user_data['photo'] = photo
 
         new_user = User(**user_data)
         self.session.add(new_user)

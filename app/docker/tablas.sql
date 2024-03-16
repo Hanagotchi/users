@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS dev;
+CREATE SCHEMA IF NOT EXISTS users_service;
 
-CREATE TABLE IF NOT EXISTS dev.users (
+CREATE TABLE IF NOT EXISTS users_service.users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS dev.users (
 );
 
 INSERT INTO
-    dev.users (name, email)
+    users_service.users (name, email)
 VALUES ('Agus', 'agus@fi.uba.ar'),
     ('Pach', 'pach@fi.uba.ar'),
     ('Sofi', 'sofi@fi.uba.ar'),

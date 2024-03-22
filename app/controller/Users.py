@@ -27,3 +27,10 @@ class UsersController:
             "message": user,
             "status": status.HTTP_200_OK,
         }
+
+    def handle_update_user(self, user_id: int, update_data: dict):
+        self.users_service.update_user(user_id, update_data)
+        return {
+            "message": "User updated successfully",
+            "status": status.HTTP_200_OK,
+        }

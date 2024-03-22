@@ -67,3 +67,7 @@ class UsersService:
         if response.json().get("picture") is not None:
             user_data['photo'] = response.json().get("picture")
         return user_data
+
+    def update_user(self, user_id: int, update_data: dict):
+        self.get_user(user_id)
+        self.user_repository.edit_user(user_id, update_data)

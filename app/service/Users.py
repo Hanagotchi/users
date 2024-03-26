@@ -44,7 +44,9 @@ class UsersService:
             "grant_type": "authorization_code",
             "redirect_uri": os.environ["GOOGLE_REDIRECT_URI"]
         }
+        print(payload)
         response = requests.post(token_url, data=payload)
+        print(response)
         if response.status_code == 200:
             return response.json().get("access_token")
         else:

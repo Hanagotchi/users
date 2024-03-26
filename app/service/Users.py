@@ -46,7 +46,7 @@ class UsersService:
         }
         print(payload)
         response = requests.post(token_url, data=payload)
-        print(response)
+        print(response.text)
         if response.status_code == 200:
             return response.json().get("access_token")
         else:

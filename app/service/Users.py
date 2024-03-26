@@ -42,7 +42,7 @@ class UsersService:
             "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
             "code": authorization_code,
             "grant_type": "authorization_code",
-            "redirect_uri": "http://localhost:8000/auth/google/callback"
+            "redirect_uri": os.environ["GOOGLE_REDIRECT_URI"]
         }
         response = requests.post(token_url, data=payload)
         if response.status_code == 200:

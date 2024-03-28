@@ -1,5 +1,6 @@
 from exceptions.UserException import UserNotFound
 from exceptions.LoginException import AuthenticationError
+from models.users import User
 from repository.Users import UsersRepository
 import requests
 import os
@@ -28,10 +29,12 @@ class UsersService:
             raise AuthenticationError("Authentication code is invalid")
 
         user_info = self._get_user_info(access_token)
+        print(user_info)
         user = self.user_repository.get_user_by_email(user_info["email"])
 
         if user is None:
-            user = self.user_repository.create_user(**user_info)
+            self.user_repository.add(User(**user_info))
+            user = self.user_repository.get_user_by_email(user_info["email"])
 
         return user
 

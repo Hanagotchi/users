@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
+from typing import Optional
 
 
 class UserSchema(BaseModel):
@@ -15,3 +16,9 @@ class CreateUserSchema(BaseModel):
 
 class LoginRequest(BaseModel):
     auth_code: str
+
+
+class UpdateUserSchema(BaseModel):
+    name: Optional[str] = None
+    gender: Optional[str] = None
+    photo: Optional[HttpUrl] = None

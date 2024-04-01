@@ -63,6 +63,14 @@ class UsersRepository:
         self.session.commit()
         return new_user
 
+    def edit_user(self, user_id: int, data_to_edit: dict):
+        user = self.session.query(User).filter_by(id=user_id).first()
+        for field, value in data_to_edit.items():
+            setattr(user, field, value)
+
+        self.session.commit()
+        return user
+
     def __parse_result(self, result):
         if not result:
             return []

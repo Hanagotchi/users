@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Dict
 
+
 class UserSchema(BaseModel):
     id: int
     name: str

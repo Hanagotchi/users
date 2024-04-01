@@ -40,10 +40,6 @@ class UsersController:
 
     def handle_login(self, auth_code: str):
         user = self.users_service.login(auth_code)
-        return {
-            "message": user,
-            "status": status.HTTP_200_OK,
-        }
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=jsonable_encoder({

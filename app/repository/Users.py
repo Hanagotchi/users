@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from os import environ
 from typing import Optional
+from models.database import Base
 from models.users import User
 
 
@@ -25,6 +26,10 @@ class UsersRepository:
     def rollback(self):
         self.session.rollback()
 
+    def add(self, record: Base):
+        self.session.add(record)
+        self.session.commit()
+
     def get_user(self, user_id: int):
         user = self.session.query(User).filter_by(id=user_id).first()
         return user.__dict__ if user else None
@@ -43,7 +48,7 @@ class UsersRepository:
         name: Optional[str] = None,
         gender: Optional[str] = None,
         photo: Optional[str] = None,
-    ):
+    ) -> User:
         user_data = {"email": email}
 
         if name is not None:

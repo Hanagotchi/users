@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, JSON
 from models.database import Base
 from os import environ
 
@@ -13,3 +13,4 @@ class User(Base):
     email = Column(String, nullable=False)
     gender = Column(String, nullable=True)
     photo = Column(String, nullable=True)
+    location = Column(JSON, nullable=True)

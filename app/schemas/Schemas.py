@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Dict
 
 class UserSchema(BaseModel):
     id: int
@@ -7,6 +7,7 @@ class UserSchema(BaseModel):
     email: str
     gender: str
     photo: str
+    location: Dict
 
 
 class CreateUserSchema(BaseModel):

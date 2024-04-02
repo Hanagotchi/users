@@ -1,6 +1,6 @@
-from pydantic import BaseModel
-from typing import Dict
 from datetime import date
+from pydantic import BaseModel, HttpUrl
+from typing import Optional, Dict
 
 
 class UserSchema(BaseModel):
@@ -19,3 +19,9 @@ class CreateUserSchema(BaseModel):
 
 class LoginRequest(BaseModel):
     auth_code: str
+
+
+class UpdateUserSchema(BaseModel):
+    name: Optional[str] = None
+    gender: Optional[str] = None
+    photo: Optional[HttpUrl] = None

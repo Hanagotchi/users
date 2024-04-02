@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
-from schemas.Schemas import CreateUserSchema
+from schemas.Schemas import CreateUserSchema, UpdateUserSchema
 from schemas.Schemas import LoginRequest
 
 
@@ -35,3 +35,8 @@ async def create_user(user_data: CreateUserSchema):
 @app.post("/login")
 def login_with_google(request: LoginRequest):
     return users_controller.handle_login(request.auth_code)
+
+
+@app.patch("/users/{user_id}")
+async def update_user(user_id: int, update_data: UpdateUserSchema):
+    return users_controller.handle_update_user(user_id, update_data.dict())

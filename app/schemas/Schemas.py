@@ -21,4 +21,4 @@ class LoginRequest(BaseModel):
 class UpdateUserSchema(BaseModel):
     name: Optional[str] = None
     gender: Optional[str] = None
-    photo: Optional[HttpUrl] = None
+    photo: str

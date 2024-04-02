@@ -7,8 +7,9 @@ class UserNotFound(HTTPException):
         detail = f"User with id {id} not found"
         super().__init__(status_code=status_code, detail=detail)
 
+
 class InvalidURL(HTTPException):
     def __init__(self, id: int):
         status_code = status.HTTP_400_BAD_REQUEST
-        detail = f"Invalid URL"
+        detail = "Invalid URL"
         super().__init__(status_code=status_code, detail=detail)

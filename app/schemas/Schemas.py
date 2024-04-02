@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
+from datetime import date
 
 
 class UserSchema(BaseModel):
@@ -8,6 +9,7 @@ class UserSchema(BaseModel):
     email: str
     gender: str
     photo: str
+    birthdate: date
     location: Dict
 
 

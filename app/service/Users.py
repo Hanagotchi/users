@@ -29,7 +29,6 @@ class UsersService:
             raise AuthenticationError("Authentication code is invalid")
 
         user_info = self._get_user_info(access_token)
-        print(user_info)
         user = self.user_repository.get_user_by_email(user_info["email"])
 
         if user is None:

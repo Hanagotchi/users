@@ -15,6 +15,11 @@ class UserSchema(BaseModel):
 
 class CreateUserSchema(BaseModel):
     email: str
+    name: Optional[str] = None
+    gender: Optional[str] = None
+    photo: Optional[str] = None
+    birthdate: Optional[date] = None
+    location: Optional[Dict] = None
 
 
 class LoginRequest(BaseModel):

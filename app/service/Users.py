@@ -1,4 +1,4 @@
-from exceptions.UserException import UserNotFound
+from exceptions.UserException import UserNotFound, InvalidData
 from exceptions.LoginException import AuthenticationError
 from models.users import User
 from repository.Users import UsersRepository
@@ -21,7 +21,9 @@ class UsersService:
 
     def create_user(self, user_data: dict):
         email = user_data.get("email")
-        return self.user_repository.create_user(email)
+        if (not self._validate_location(user_data.get("location"))):
+            raise InvalidData()
+        return self.user_repository.create_user(**user_data)
 
     def login(self, auth_code: str):
         access_token = self._get_access_token(auth_code)
@@ -36,6 +38,13 @@ class UsersService:
             user = self.user_repository.get_user_by_email(user_info["email"])
 
         return user
+
+    def update_user(self, user_id: int, update_data: dict):
+        # TODO: aca habria que chequear a partir del token, session o algo que
+        # es el propio usuario editando sus datos y no permitir
+        # que un usuario edite los de un tercero
+        self.get_user(user_id)
+        self.user_repository.edit_user(user_id, update_data)
 
     def _get_access_token(self, authorization_code):
         token_url = "https://oauth2.googleapis.com/token"
@@ -70,9 +79,23 @@ class UsersService:
             user_data['photo'] = response.json().get("picture")
         return user_data
 
-    def update_user(self, user_id: int, update_data: dict):
-        # TODO: aca habria que chequear a partir del token, session o algo que
-        # es el propio usuario editando sus datos y no permitir
-        # que un usuario edite los de un tercero
-        self.get_user(user_id)
-        self.user_repository.edit_user(user_id, update_data)
+    def _validate_location(self, location):
+        if "lat" in location and "long" in location:
+            latitud = location["lat"]
+            longitud = location["long"]
+
+            if (-90<=location["lat"]<= 90 and -180<=location["long"]<= 180):
+                return True
+
+            return False
+
+"""             if isinstance(latitud, (int, float)) and isinstance(longitud, (int, float)):
+                if -90 <= latitud <= 90 and -90 <= longitud <= 90:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False """
+

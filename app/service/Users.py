@@ -81,21 +81,7 @@ class UsersService:
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:
-            latitud = location["lat"]
-            longitud = location["long"]
+            if (-90<=location["lat"]<= 90 and -180<=location["long"]<= 180): return True
+        return False
 
-            if (-90<=location["lat"]<= 90 and -180<=location["long"]<= 180):
-                return True
-
-            return False
-
-"""             if isinstance(latitud, (int, float)) and isinstance(longitud, (int, float)):
-                if -90 <= latitud <= 90 and -90 <= longitud <= 90:
-                    return True
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False """
 

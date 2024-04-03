@@ -15,3 +15,5 @@ class User(Base):
     photo = Column(String, nullable=True)
     birthdate = Column(Date, nullable=True)
     location = Column(JSON, nullable=True)
+    nickname = Column(String, nullable=True)
+    biography = Column(String, nullable=True)

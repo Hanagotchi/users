@@ -20,8 +20,7 @@ class UsersService:
         return self.user_repository.get_all_users()
 
     def create_user(self, user_data: dict):
-        email = user_data.get("email")
-        if (not self._validate_location(user_data.get("location"))):
+        if not self._validate_location(user_data.get("location")):
             raise InvalidData()
         return self.user_repository.create_user(**user_data)
 
@@ -81,7 +80,7 @@ class UsersService:
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:
-            if (-90<=location["lat"]<= 90 and -180<=location["long"]<= 180): return True
+            if -90 <= location["lat"] <= 90 and \
+               -180 <= location["long"] <= 180:
+                return True
         return False
-
-

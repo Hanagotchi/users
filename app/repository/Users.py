@@ -49,6 +49,8 @@ class UsersRepository:
         name: Optional[str] = None,
         gender: Optional[str] = None,
         photo: Optional[str] = None,
+        nickname: Optional[str] = None,
+        biography: Optional[str] = None,
         location: Optional[dict] = None,
         birthdate: Optional[date] = None
     ) -> User:
@@ -64,6 +66,10 @@ class UsersRepository:
             user_data["location"] = location
         if birthdate is not None:
             user_data["birthdate"] = birthdate
+        if nickname is not None:
+            user_data["nickname"] = nickname
+        if biography is not None:
+            user_data["biography"] = biography
 
         new_user = User(**user_data)
         self.session.add(new_user)

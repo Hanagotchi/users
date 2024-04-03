@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS users_service.users (
     gender VARCHAR(20),
     photo VARCHAR(255),
     birthdate DATE,
-    location JSONB
+    location JSONB,
+    nickname VARCHAR(30),
+    biography VARCHAR(255)
 );
 
 INSERT INTO

@@ -11,6 +11,8 @@ class UserSchema(BaseModel):
     photo: str
     birthdate: date
     location: Dict
+    nickname: str
+    biography: str
 
 
 class CreateUserSchema(BaseModel):
@@ -20,6 +22,8 @@ class CreateUserSchema(BaseModel):
     photo: Optional[str] = None
     birthdate: Optional[date] = None
     location: Optional[Dict] = None
+    nickname: Optional[str] = None
+    biography: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
@@ -30,3 +34,7 @@ class UpdateUserSchema(BaseModel):
     name: Optional[str] = None
     gender: Optional[str] = None
     photo: Optional[HttpUrl] = None
+    birthdate: Optional[date] = None
+    location: Optional[Dict] = None
+    nickname: Optional[str] = None
+    biography: Optional[str] = None

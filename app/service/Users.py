@@ -25,6 +25,20 @@ class UsersService:
             raise InvalidData()
         return self.user_repository.create_user(**user_data)
 
+    def update_user(self, user_id: int, update_data: dict):
+        # TODO: aca habria que chequear a partir del token, session o algo que
+        # es el propio usuario editando sus datos y no permitir
+        # que un usuario edite los de un tercero
+        self.get_user(user_id)
+        filtered_update_data = {k: v for k, v in update_data.items()
+                                if v is not None}
+        if 'photo' in filtered_update_data:
+            photo_url = filtered_update_data['photo']
+            if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
+                            r'(?:/[^/#?]+)+(?:\?.*)?$', photo_url):
+                raise InvalidURL("Invalid photo URL")
+        self.user_repository.edit_user(user_id, filtered_update_data)
+
     def login(self, auth_code: str):
         access_token = self._get_access_token(auth_code)
         if access_token is None:
@@ -71,21 +85,6 @@ class UsersService:
         if response.json().get("picture") is not None:
             user_data['photo'] = response.json().get("picture")
         return user_data
-
-    def update_user(self, user_id: int, update_data: dict):
-        # TODO: aca habria que chequear a partir del token, session o algo que
-        # es el propio usuario editando sus datos y no permitir
-        # que un usuario edite los de un tercero
-        self.get_user(user_id)
-        filtered_update_data = {k: v for k, v in update_data.items()
-                                if v is not None}
-        if 'photo' in filtered_update_data:
-            photo_url = filtered_update_data['photo']
-            if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
-                            r'(?:/[^/#?]+)+\.(?:jpg|jpeg|png|gif)$',
-                            photo_url):
-                raise InvalidURL("Invalid photo URL")
-        self.user_repository.edit_user(user_id, filtered_update_data)
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:

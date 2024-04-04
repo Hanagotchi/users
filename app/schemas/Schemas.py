@@ -33,7 +33,7 @@ class LoginRequest(BaseModel):
 class UpdateUserSchema(BaseModel):
     name: Optional[str] = None
     gender: Optional[str] = None
-    photo: Optional[HttpUrl] = None
+    photo: Optional[str] = None
     birthdate: Optional[date] = None
     location: Optional[Dict] = None
     nickname: Optional[str] = None

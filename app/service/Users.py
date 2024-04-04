@@ -1,9 +1,10 @@
-from exceptions.UserException import UserNotFound, InvalidData
+from exceptions.UserException import UserNotFound, InvalidData, InvalidURL
 from exceptions.LoginException import AuthenticationError
 from models.users import User
 from repository.Users import UsersRepository
 import requests
 import os
+import re
 
 
 class UsersService:
@@ -38,13 +39,6 @@ class UsersService:
 
         return user
 
-    def update_user(self, user_id: int, update_data: dict):
-        # TODO: aca habria que chequear a partir del token, session o algo que
-        # es el propio usuario editando sus datos y no permitir
-        # que un usuario edite los de un tercero
-        self.get_user(user_id)
-        self.user_repository.edit_user(user_id, update_data)
-
     def _get_access_token(self, authorization_code):
         token_url = "https://oauth2.googleapis.com/token"
         payload = {
@@ -77,6 +71,21 @@ class UsersService:
         if response.json().get("picture") is not None:
             user_data['photo'] = response.json().get("picture")
         return user_data
+
+    def update_user(self, user_id: int, update_data: dict):
+        # TODO: aca habria que chequear a partir del token, session o algo que
+        # es el propio usuario editando sus datos y no permitir
+        # que un usuario edite los de un tercero
+        self.get_user(user_id)
+        filtered_update_data = {k: v for k, v in update_data.items()
+                                if v is not None}
+        if 'photo' in filtered_update_data:
+            photo_url = filtered_update_data['photo']
+            if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
+                            r'(?:/[^/#?]+)+\.(?:jpg|jpeg|png|gif)$',
+                            photo_url):
+                raise InvalidURL("Invalid photo URL")
+        self.user_repository.edit_user(user_id, filtered_update_data)
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:

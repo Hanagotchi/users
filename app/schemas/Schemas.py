@@ -1,5 +1,6 @@
+from datetime import date
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict
 
 
 class UserSchema(BaseModel):
@@ -8,10 +9,21 @@ class UserSchema(BaseModel):
     email: str
     gender: str
     photo: str
+    birthdate: date
+    location: Dict
+    nickname: str
+    biography: str
 
 
 class CreateUserSchema(BaseModel):
     email: str
+    name: Optional[str] = None
+    gender: Optional[str] = None
+    photo: Optional[str] = None
+    birthdate: Optional[date] = None
+    location: Optional[Dict] = None
+    nickname: Optional[str] = None
+    biography: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
@@ -21,4 +33,8 @@ class LoginRequest(BaseModel):
 class UpdateUserSchema(BaseModel):
     name: Optional[str] = None
     gender: Optional[str] = None
-    photo: str
+    photo: Optional[str] = None
+    birthdate: Optional[date] = None
+    location: Optional[Dict] = None
+    nickname: Optional[str] = None
+    biography: Optional[str] = None

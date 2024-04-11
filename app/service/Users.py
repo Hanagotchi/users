@@ -5,6 +5,7 @@ from repository.Users import UsersRepository
 import requests
 import os
 import re
+import jwt
 
 
 class UsersService:
@@ -50,8 +51,12 @@ class UsersService:
         if user is None:
             self.user_repository.add(User(**user_info))
             user = self.user_repository.get_user_by_email(user_info["email"])
-
-        return user
+        user_id = user.get("id")
+        payload = {"user_id": user_id}
+        jwt_token = jwt.encode(payload,
+                               os.environ["JWT_SECRET"],
+                               algorithm="HS256")
+        return user, jwt_token
 
     def _get_access_token(self, authorization_code):
         token_url = "https://oauth2.googleapis.com/token"

@@ -39,13 +39,16 @@ class UsersController:
         )
 
     def handle_login(self, auth_code: str):
-        user = self.users_service.login(auth_code)
+        user, jwt_token = self.users_service.login(auth_code)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content=jsonable_encoder({
                 "message": user,
                 "status": status.HTTP_200_OK,
-            })
+            }),
+            headers={
+                    "x-access-token": f"{jwt_token}"
+                },
         )
 
     def handle_update_user(self, user_id: int, update_data: dict):

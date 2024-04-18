@@ -6,3 +6,4 @@ psycopg2-binary
 SQLAlchemy
 requests_oauthlib
 pyjwt
+httpx

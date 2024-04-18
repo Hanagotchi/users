@@ -21,6 +21,9 @@ class UsersService:
     def get_all_users(self):
         return self.user_repository.get_all_users()
 
+    def get_users_by_ids(self, ids: list):
+        return self.user_repository.get_users_by_ids(ids)
+
     def create_user(self, user_data: dict):
         if not self._validate_location(user_data.get("location")):
             raise InvalidData()
@@ -31,12 +34,14 @@ class UsersService:
         # es el propio usuario editando sus datos y no permitir
         # que un usuario edite los de un tercero
         self.get_user(user_id)
-        filtered_update_data = {k: v for k, v in update_data.items()
-                                if v is not None}
-        if 'photo' in filtered_update_data:
-            photo_url = filtered_update_data['photo']
-            if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
-                            r'(?:/[^/#?]+)+(?:\?.*)?$', photo_url):
+        filtered_update_data = {k: v for k, v in update_data.items() if v is not None}
+        if "photo" in filtered_update_data:
+            photo_url = filtered_update_data["photo"]
+            if not re.match(
+                r"^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}"
+                r"(?:/[^/#?]+)+(?:\?.*)?$",
+                photo_url,
+            ):
                 raise InvalidURL("Invalid photo URL")
         self.user_repository.edit_user(user_id, filtered_update_data)
 
@@ -53,9 +58,7 @@ class UsersService:
             user = self.user_repository.get_user_by_email(user_info["email"])
         user_id = user.get("id")
         payload = {"user_id": user_id}
-        jwt_token = jwt.encode(payload,
-                               os.environ["JWT_SECRET"],
-                               algorithm="HS256")
+        jwt_token = jwt.encode(payload, os.environ["JWT_SECRET"], algorithm="HS256")
         return user, jwt_token
 
     def _get_access_token(self, authorization_code):
@@ -65,7 +68,7 @@ class UsersService:
             "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
             "code": authorization_code,
             "grant_type": "authorization_code",
-            "redirect_uri": os.environ["GOOGLE_REDIRECT_URI"]
+            "redirect_uri": os.environ["GOOGLE_REDIRECT_URI"],
         }
         response = requests.post(token_url, data=payload)
         if response.status_code == 200:
@@ -82,18 +85,17 @@ class UsersService:
         if response.status_code != 200:
             raise AuthenticationError()
 
-        user_data = {'email': response.json().get("email")}
+        user_data = {"email": response.json().get("email")}
         if response.json().get("gender") is not None:
-            user_data['gender'] = response.json().get("gender")
+            user_data["gender"] = response.json().get("gender")
         if response.json().get("name") is not None:
-            user_data['name'] = response.json().get("name")
+            user_data["name"] = response.json().get("name")
         if response.json().get("picture") is not None:
-            user_data['photo'] = response.json().get("picture")
+            user_data["photo"] = response.json().get("picture")
         return user_data
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:
-            if -90 <= location["lat"] <= 90 and \
-               -180 <= location["long"] <= 180:
+            if -90 <= location["lat"] <= 90 and -180 <= location["long"] <= 180:
                 return True
         return False

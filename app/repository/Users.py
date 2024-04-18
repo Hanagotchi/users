@@ -8,11 +8,7 @@ from datetime import date
 
 
 class UsersRepository:
-    db_url = environ.get(
-                    "DATABASE_URL").replace(
-                        "postgres://",
-                        "postgresql://",
-                        1)
+    db_url = environ.get("DATABASE_URL").replace("postgres://", "postgresql://", 1)
 
     engine = create_engine(db_url)
 
@@ -39,8 +35,12 @@ class UsersRepository:
         user = self.session.query(User).filter_by(email=email).first()
         return user.__dict__ if user else None
 
-    def get_all_users(self):
+    def get_all_users(self, ids: list = None):
         users = self.session.query(User).all()
+        return self.__parse_result(users)
+
+    def get_users_by_ids(self, ids: list):
+        users = self.session.query(User).filter(User.id.in_(ids)).all()
         return self.__parse_result(users)
 
     def create_user(
@@ -52,7 +52,7 @@ class UsersRepository:
         nickname: Optional[str] = None,
         biography: Optional[str] = None,
         location: Optional[dict] = None,
-        birthdate: Optional[date] = None
+        birthdate: Optional[date] = None,
     ) -> User:
         user_data = {"email": email}
 

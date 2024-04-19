@@ -27,9 +27,6 @@ class UsersService:
         return self.user_repository.create_user(**user_data)
 
     def update_user(self, user_id: int, update_data: dict):
-        # TODO: aca habria que chequear a partir del token, session o algo que
-        # es el propio usuario editando sus datos y no permitir
-        # que un usuario edite los de un tercero
         self.get_user(user_id)
         filtered_update_data = {k: v for k, v in update_data.items()
                                 if v is not None}

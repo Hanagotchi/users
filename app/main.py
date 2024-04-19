@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from controller.Users import UsersController
 from service.Users import UsersService
+from service.Auth import AuthService
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema, UpdateUserSchema
 from schemas.Schemas import LoginRequest
@@ -8,8 +9,9 @@ from schemas.Schemas import LoginRequest
 
 app = FastAPI()
 users_repository = UsersRepository()
+auth_service = AuthService()
 users_service = UsersService(users_repository)
-users_controller = UsersController(users_service)
+users_controller = UsersController(users_service, auth_service)
 
 
 @app.get("/")
@@ -38,5 +40,8 @@ def login_with_google(request: LoginRequest):
 
 
 @app.patch("/users/{user_id}")
-async def update_user(user_id: int, update_data: UpdateUserSchema):
-    return users_controller.handle_update_user(user_id, update_data.dict())
+async def update_user(user_id: int, update_data: UpdateUserSchema,
+                      request: Request):
+    return users_controller.handle_update_user(user_id,
+                                               update_data.dict(),
+                                               request)

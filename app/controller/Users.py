@@ -1,12 +1,15 @@
-from fastapi import status
+from fastapi import status, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from service.Users import UsersService
+from service.Auth import AuthService
 
 
 class UsersController:
-    def __init__(self, users_service: UsersService):
+    def __init__(self, users_service: UsersService,
+                 auth_service: AuthService):
         self.users_service = users_service
+        self.auth_service = auth_service
 
     def handle_get_user(self, user_id: int):
         user = self.users_service.get_user(user_id)
@@ -51,7 +54,10 @@ class UsersController:
                 },
         )
 
-    def handle_update_user(self, user_id: int, update_data: dict):
+    def handle_update_user(self, user_id: int,
+                           update_data: dict,
+                           request: Request):
+        self.auth_service.authenticate(user_id, request)
         self.users_service.update_user(user_id, update_data)
         return {
             "message": "User updated successfully",

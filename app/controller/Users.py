@@ -13,12 +13,10 @@ class UsersController:
         user = self.users_service.get_user(user_id)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content=jsonable_encoder(
-                {
-                    "message": user,
-                    "status": status.HTTP_200_OK,
-                }
-            ),
+            content=jsonable_encoder({
+                "message": user,
+                "status": status.HTTP_200_OK,
+            })
         )
 
     def handle_get_all_users(self, ids: list | None = None):
@@ -28,23 +26,19 @@ class UsersController:
             users = self.users_service.get_users_by_ids(ids)
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
-                content=jsonable_encoder(
-                    {
-                        "message": users,
-                        "status": status.HTTP_200_OK,
-                    }
-                ),
+                content=jsonable_encoder({
+                    "message": users,
+                    "status": status.HTTP_200_OK,
+                })
             )
         else:
             users = self.users_service.get_all_users()
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
-                content=jsonable_encoder(
-                    {
-                        "message": users,
-                        "status": status.HTTP_200_OK,
-                    }
-                ),
+                content=jsonable_encoder({
+                    "message": users,
+                    "status": status.HTTP_200_OK,
+                }),
             )
 
     async def handle_create_user(self, user_data: dict):
@@ -52,12 +46,10 @@ class UsersController:
         await SocialService.create_social_user(user_id=result.id)
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
-            content=jsonable_encoder(
-                {
-                    "message": "User created successfully",
+            content=jsonable_encoder({
+                "message": "User created successfully",
                     "status": status.HTTP_201_CREATED,
-                }
-            ),
+            }),
         )
 
     async def handle_login(self, auth_code: str):
@@ -65,12 +57,10 @@ class UsersController:
         await SocialService.create_social_user(user_id=user.get("id"))
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content=jsonable_encoder(
-                {
-                    "message": user,
-                    "status": status.HTTP_200_OK,
-                }
-            ),
+            content=jsonable_encoder({
+                "message": user,
+                "status": status.HTTP_200_OK,
+            }),
             headers={"x-access-token": f"{jwt_token}"},
         )
 

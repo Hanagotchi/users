@@ -34,14 +34,12 @@ class UsersService:
         # es el propio usuario editando sus datos y no permitir
         # que un usuario edite los de un tercero
         self.get_user(user_id)
-        filtered_update_data = {k: v for k, v in update_data.items() if v is not None}
-        if "photo" in filtered_update_data:
-            photo_url = filtered_update_data["photo"]
-            if not re.match(
-                r"^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}"
-                r"(?:/[^/#?]+)+(?:\?.*)?$",
-                photo_url,
-            ):
+        filtered_update_data = {k: v for k, v in update_data.items()
+                                if v is not None}
+        if 'photo' in filtered_update_data:
+            photo_url = filtered_update_data['photo']
+            if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
+                            r'(?:/[^/#?]+)+(?:\?.*)?$', photo_url):
                 raise InvalidURL("Invalid photo URL")
         self.user_repository.edit_user(user_id, filtered_update_data)
 

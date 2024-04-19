@@ -48,7 +48,7 @@ class UsersController:
             status_code=status.HTTP_201_CREATED,
             content=jsonable_encoder({
                 "message": "User created successfully",
-                    "status": status.HTTP_201_CREATED,
+                "status": status.HTTP_201_CREATED,
             }),
         )
 

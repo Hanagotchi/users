@@ -1,8 +1,12 @@
 import logging
-from httpx import AsyncClient, Response, AsyncHTTPTransport
+from httpx import (
+    AsyncClient,
+    Response,
+    AsyncHTTPTransport
+)
 from os import environ
 
-from exceptions.InternalServerErrorException import InternalServerErrorException
+from exceptions.InternalServerErrorException import InternalServerErrorExcep
 from exceptions.UserException import InvalidData
 
 logger = logging.getLogger("social")
@@ -21,7 +25,8 @@ class SocialService:
     @staticmethod
     async def post(path: str, body: dict) -> Response:
         async with AsyncClient(
-            transport=AsyncHTTPTransport(retries=NUMBER_OF_RETRIES), timeout=TIMEOUT
+            transport=AsyncHTTPTransport(retries=NUMBER_OF_RETRIES),
+            timeout=TIMEOUT
         ) as client:
             url = SOCIAL_SERVICE_URL + path
             response = await client.post(url, json=body)
@@ -30,11 +35,12 @@ class SocialService:
     @staticmethod
     async def create_social_user(user_id: int):
         try:
-            response = await SocialService.post("/social/users", body={"id": user_id})
+            response = await SocialService.post("/social/users",
+                                                body={"id": user_id})
             if response.status_code == 201:
                 return
             else:
                 raise InvalidData()
         except Exception as e:
             print(f"Unexpected error: {e}")
-            raise InternalServerErrorException("Social service")
+            raise InternalServerErrorExcep("Social service")

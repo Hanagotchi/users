@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from typing import Optional
 
 
-class InternalServerErrorException(HTTPException):
+class InternalServerErrorExcep(HTTPException):
     def __init__(
         self,
         microservice: Optional[str] = "User service",

@@ -56,7 +56,9 @@ class UsersService:
             user = self.user_repository.get_user_by_email(user_info["email"])
         user_id = user.get("id")
         payload = {"user_id": user_id}
-        jwt_token = jwt.encode(payload, os.environ["JWT_SECRET"], algorithm="HS256")
+        jwt_token = jwt.encode(payload,
+                               os.environ["JWT_SECRET"],
+                               algorithm="HS256")
         return user, jwt_token
 
     def _get_access_token(self, authorization_code):
@@ -94,6 +96,7 @@ class UsersService:
 
     def _validate_location(self, location):
         if "lat" in location and "long" in location:
-            if -90 <= location["lat"] <= 90 and -180 <= location["long"] <= 180:
+            if -90 <= location["lat"] <= 90 and -180 \
+                   <= location["long"] <= 180:
                 return True
         return False

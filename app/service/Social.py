@@ -30,7 +30,7 @@ class SocialService:
     @staticmethod
     async def create_social_user(user_id: int):
         try:
-            response = await SocialService.post(f"/social/users", body={"id": user_id})
+            response = await SocialService.post("/social/users", body={"id": user_id})
             if response.status_code == 201:
                 return
             else:

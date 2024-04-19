@@ -24,13 +24,7 @@ def get_users(user_id: int):
 
 @app.get("/users")
 def get_all_users(ids: Annotated[Union[List[str], None], Query()] = None):
-    if ids:
-        ids = ids[0].split(",")
-        if len(ids) > 0:
-            ids = filter(lambda x: x.isdigit(), ids)
-            return users_controller.handle_get_all_users(ids)
-
-    return users_controller.handle_get_all_users()
+    return users_controller.handle_get_all_users(ids)
 
 
 @app.post("/users")

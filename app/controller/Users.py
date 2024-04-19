@@ -21,8 +21,10 @@ class UsersController:
             ),
         )
 
-    def handle_get_all_users(self, ids: list = None):
+    def handle_get_all_users(self, ids: list | None = None):
         if ids:
+            ids = ids[0].split(",")
+            ids = [x for x in ids if x.isdigit()]
             users = self.users_service.get_users_by_ids(ids)
             return JSONResponse(
                 status_code=status.HTTP_200_OK,

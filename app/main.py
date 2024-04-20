@@ -15,22 +15,22 @@ users_controller = UsersController(users_service, auth_service)
 
 
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def root():
+    return {"message": "users service"}
 
 
 @app.get("/users/{user_id}")
-async def get_users(user_id: int):
+def get_users(user_id: int):
     return users_controller.handle_get_user(user_id)
 
 
 @app.get("/users")
-async def get_all_users():
+def get_all_users():
     return users_controller.handle_get_all_users()
 
 
 @app.post("/users")
-async def create_user(user_data: CreateUserSchema):
+def create_user(user_data: CreateUserSchema):
     return users_controller.handle_create_user(user_data.dict())
 
 

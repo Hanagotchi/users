@@ -13,6 +13,7 @@ class UserSchema(BaseModel):
     location: Dict
     nickname: str
     biography: str
+    device_token: str
 
 
 class CreateUserSchema(BaseModel):
@@ -38,3 +39,4 @@ class UpdateUserSchema(BaseModel):
     location: Optional[Dict] = None
     nickname: Optional[str] = None
     biography: Optional[str] = None
+    device_token: Optional[str] = None

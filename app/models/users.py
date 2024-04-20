@@ -17,3 +17,4 @@ class User(Base):
     location = Column(JSON, nullable=True)
     nickname = Column(String, nullable=True)
     biography = Column(String, nullable=True)
+    device_token = Column(String, nullable=True)

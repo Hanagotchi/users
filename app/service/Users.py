@@ -24,7 +24,12 @@ class UsersService:
     def create_user(self, user_data: dict):
         if not self._validate_location(user_data.get("location")):
             raise InvalidData()
-        return self.user_repository.create_user(**user_data)
+        try:
+            user = self.user_repository.create_user(**user_data)
+            return user
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
 
     def update_user(self, user_id: int, update_data: dict):
         # TODO: aca habria que chequear a partir del token, session o algo que
@@ -38,7 +43,11 @@ class UsersService:
             if not re.match(r'^https?://(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}'
                             r'(?:/[^/#?]+)+(?:\?.*)?$', photo_url):
                 raise InvalidURL("Invalid photo URL")
-        self.user_repository.edit_user(user_id, filtered_update_data)
+        try:
+            self.user_repository.edit_user(user_id, filtered_update_data)
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
 
     def login(self, auth_code: str):
         access_token = self._get_access_token(auth_code)

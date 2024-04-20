@@ -17,7 +17,6 @@ class InvalidData(HTTPException):
 
 
 class InvalidURL(HTTPException):
-    def __init__(self, id: int):
+    def __init__(self, detail: str):
         status_code = status.HTTP_400_BAD_REQUEST
-        detail = "Invalid URL"
         super().__init__(status_code=status_code, detail=detail)

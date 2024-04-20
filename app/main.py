@@ -14,7 +14,7 @@ users_controller = UsersController(users_service)
 
 @app.get("/")
 def root():
-    return {"message": "Hello World"}
+    return {"message": "users service"}
 
 
 @app.get("/users/{user_id}")

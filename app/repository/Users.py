@@ -5,6 +5,7 @@ from typing import Optional
 from models.database import Base
 from models.users import User
 from datetime import date
+from .sql_exception_handling import withSQLExceptionsHandle
 
 
 class UsersRepository:
@@ -25,14 +26,17 @@ class UsersRepository:
     def rollback(self):
         self.session.rollback()
 
+    @withSQLExceptionsHandle()
     def add(self, record: Base):
         self.session.add(record)
         self.session.commit()
 
+    @withSQLExceptionsHandle()
     def get_user(self, user_id: int):
         user = self.session.query(User).filter_by(id=user_id).first()
         return user.__dict__ if user else None
 
+    @withSQLExceptionsHandle()
     def get_user_by_email(self, email: str):
         user = self.session.query(User).filter_by(email=email).first()
         return user.__dict__ if user else None
@@ -45,6 +49,7 @@ class UsersRepository:
         users = self.session.query(User).filter(User.id.in_(ids)).all()
         return self.__parse_result(users)
 
+    @withSQLExceptionsHandle()
     def create_user(
         self,
         email: str,
@@ -78,6 +83,7 @@ class UsersRepository:
         self.session.commit()
         return new_user
 
+    @withSQLExceptionsHandle()
     def edit_user(self, user_id: int, data_to_edit: dict):
         user = self.session.query(User).filter_by(id=user_id).first()
         for field, value in data_to_edit.items():

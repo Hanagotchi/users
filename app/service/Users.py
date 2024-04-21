@@ -6,6 +6,7 @@ import requests
 import os
 import re
 import jwt
+import uuid
 
 
 class UsersService:
@@ -52,6 +53,17 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
+    def _generate_nickname(self, name):
+
+        name_without_spaces = name.replace(" ", "")
+        uuid_max = 8
+        max_length = 18
+        random_uuid = str(uuid.uuid4()).replace("-", "")[:uuid_max]
+        truncated_name = name_without_spaces[:(max_length - uuid_max)]
+        nickname = truncated_name + random_uuid
+
+        return nickname
+
     def login(self, auth_code: str):
         access_token = self._get_access_token(auth_code)
         if access_token is None:
@@ -61,6 +73,16 @@ class UsersService:
         user = self.user_repository.get_user_by_email(user_info["email"])
 
         if user is None:
+            print(f"user info: {user_info}")
+            if "name" in user_info:
+                name = user_info["name"]
+            else:
+                email = user_info["email"]
+                match = re.match(r"([^@]+)@.*", email)
+                if match:
+                    name = match.group(1)
+            nickname = self._generate_nickname(name)
+            user_info["nickname"] = nickname
             self.user_repository.add(User(**user_info))
             user = self.user_repository.get_user_by_email(user_info["email"])
         user_id = user.get("id")
@@ -93,14 +115,15 @@ class UsersService:
 
         if response.status_code != 200:
             raise AuthenticationError()
-
-        user_data = {"email": response.json().get("email")}
-        if response.json().get("gender") is not None:
-            user_data["gender"] = response.json().get("gender")
-        if response.json().get("name") is not None:
-            user_data["name"] = response.json().get("name")
-        if response.json().get("picture") is not None:
-            user_data["photo"] = response.json().get("picture")
+        json = response.json()
+        print(json)
+        user_data = {"email": json.get("email")}
+        if json.get("gender") is not None:
+            user_data["gender"] = json.get("gender")
+        if json.get("name") is not None:
+            user_data["name"] = json.get("name")
+        if json.get("picture") is not None:
+            user_data["photo"] = json.get("picture")
         return user_data
 
     def _validate_location(self, location):

@@ -115,15 +115,14 @@ class UsersService:
 
         if response.status_code != 200:
             raise AuthenticationError()
-        json = response.json()
-        print(json)
-        user_data = {"email": json.get("email")}
-        if json.get("gender") is not None:
-            user_data["gender"] = json.get("gender")
-        if json.get("name") is not None:
-            user_data["name"] = json.get("name")
-        if json.get("picture") is not None:
-            user_data["photo"] = json.get("picture")
+
+        user_data = {"email": response.json().get("email")}
+        if response.json().get("gender") is not None:
+            user_data["gender"] = response.json().get("gender")
+        if response.json().get("name") is not None:
+            user_data["name"] = response.json().get("name")
+        if response.json().get("picture") is not None:
+            user_data["photo"] = response.json().get("picture")
         return user_data
 
     def _validate_location(self, location):

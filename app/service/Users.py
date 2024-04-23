@@ -6,6 +6,7 @@ import requests
 import os
 import re
 import jwt
+import uuid
 
 
 class UsersService:
@@ -52,6 +53,17 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
+    def _generate_nickname(self, name):
+
+        name_without_spaces = name.replace(" ", "")
+        uuid_max = 8
+        max_length = 18
+        random_uuid = str(uuid.uuid4()).replace("-", "")[:uuid_max]
+        truncated_name = name_without_spaces[:(max_length - uuid_max)]
+        nickname = truncated_name + random_uuid
+
+        return nickname
+
     def login(self, auth_code: str):
         access_token = self._get_access_token(auth_code)
         if access_token is None:
@@ -61,6 +73,16 @@ class UsersService:
         user = self.user_repository.get_user_by_email(user_info["email"])
 
         if user is None:
+            print(f"user info: {user_info}")
+            if "name" in user_info:
+                name = user_info["name"]
+            else:
+                email = user_info["email"]
+                match = re.match(r"([^@]+)@.*", email)
+                if match:
+                    name = match.group(1)
+            nickname = self._generate_nickname(name)
+            user_info["nickname"] = nickname
             self.user_repository.add(User(**user_info))
             user = self.user_repository.get_user_by_email(user_info["email"])
         user_id = user.get("id")

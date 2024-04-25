@@ -7,3 +7,4 @@ SQLAlchemy
 requests_oauthlib
 pyjwt
 httpx
+APScheduler

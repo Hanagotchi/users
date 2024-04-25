@@ -7,4 +7,4 @@ SQLAlchemy
 requests_oauthlib
 pyjwt
 httpx
-APScheduler
+APScheduler>=3.10,<4.0

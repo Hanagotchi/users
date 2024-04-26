@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema, UpdateUserSchema
 from schemas.Schemas import LoginRequest
 from typing import List, Annotated, Union
-from fastapi import FastAPI, Query
 
 app = FastAPI()
 users_repository = UsersRepository()

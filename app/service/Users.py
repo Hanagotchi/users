@@ -8,6 +8,8 @@ import re
 import jwt
 import uuid
 
+TOKEN_FIELD_NAME = "x-access-token"
+
 
 class UsersService:
     def __init__(self, user_repository: UsersRepository):
@@ -36,9 +38,6 @@ class UsersService:
             raise e
 
     def update_user(self, user_id: int, update_data: dict):
-        # TODO: aca habria que chequear a partir del token, session o algo que
-        # es el propio usuario editando sus datos y no permitir
-        # que un usuario edite los de un tercero
         self.get_user(user_id)
         filtered_update_data = {k: v for k, v in update_data.items()
                                 if v is not None}
@@ -131,3 +130,19 @@ class UsersService:
                    <= location["long"] <= 180:
                 return True
         return False
+
+    def retrieve_user_id(self, request):
+        token = self.__get_token(request.headers)
+        payload = jwt.decode(token,
+                             os.environ["JWT_SECRET"],
+                             algorithms=["HS256"])
+        return int(payload.get("user_id"))
+
+    def __get_token(self, headers: dict):
+        keyName = None
+        for key in headers.keys():
+            if key.lower() == TOKEN_FIELD_NAME:
+                keyName = key
+        if not keyName:
+            return None
+        return headers.get(keyName)

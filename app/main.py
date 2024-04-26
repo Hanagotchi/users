@@ -1,10 +1,10 @@
+from fastapi import FastAPI, Request, Query
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema, UpdateUserSchema
 from schemas.Schemas import LoginRequest
 from typing import List, Annotated, Union
-from fastapi import FastAPI, Query
 
 app = FastAPI()
 users_repository = UsersRepository()
@@ -37,6 +37,8 @@ async def login_with_google(request: LoginRequest):
     return await users_controller.handle_login(request.auth_code)
 
 
-@app.patch("/users/{user_id}")
-def update_user(user_id: int, update_data: UpdateUserSchema):
-    return users_controller.handle_update_user(user_id, update_data.dict())
+@app.patch("/users/me")
+async def update_user(update_data: UpdateUserSchema,
+                      request: Request):
+    return users_controller.handle_update_user(update_data.dict(),
+                                               request)

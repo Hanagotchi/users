@@ -4,7 +4,8 @@ from service.Users import UsersService
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema, UpdateUserSchema
 from schemas.Schemas import LoginRequest
-
+from typing import List, Annotated, Union
+from fastapi import FastAPI, Query
 
 app = FastAPI()
 users_repository = UsersRepository()
@@ -23,18 +24,18 @@ def get_users(user_id: int):
 
 
 @app.get("/users")
-def get_all_users():
-    return users_controller.handle_get_all_users()
+def get_all_users(ids: Annotated[Union[List[str], None], Query()] = None):
+    return users_controller.handle_get_all_users(ids)
 
 
 @app.post("/users")
-def create_user(user_data: CreateUserSchema):
-    return users_controller.handle_create_user(user_data.dict())
+async def create_user(user_data: CreateUserSchema):
+    return await users_controller.handle_create_user(user_data.dict())
 
 
 @app.post("/login")
-def login_with_google(request: LoginRequest):
-    return users_controller.handle_login(request.auth_code)
+async def login_with_google(request: LoginRequest):
+    return await users_controller.handle_login(request.auth_code)
 
 
 @app.patch("/users/me")

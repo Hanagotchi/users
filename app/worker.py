@@ -1,4 +1,3 @@
-import asyncio
 import os
 from datetime import datetime
 from arq.connections import RedisSettings
@@ -25,7 +24,8 @@ async def heavy_endpoint(ctx: Worker, id_user: str):
     time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f'[{time}] starting heavy endpoint for {id_user}')
     session: AsyncClient = ctx['session']
-    url = 'https://hub.dummyapis.com/delay?seconds=15'
+    secs_delay = 10
+    url = 'https://httpbin.org/delay/%s' % secs_delay
     response = await session.get(url)
     time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f'[{time}] response for {id_user}: {response.json()}')

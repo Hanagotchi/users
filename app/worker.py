@@ -23,6 +23,10 @@ conn = redis.from_url(redis_url)
 
 if __name__ == '__main__':
     with Connection(conn):
-        worker = Worker(map(Queue, listen))
+        queue = Queue(connection=conn)
+        print('Queue elements:', queue.count)
+        queue.empty()
+        print('Queue elements:', queue.counts)
+        worker = Worker(map(queue, listen))
         logger.info('Ready to start the worker...')
         worker.work()

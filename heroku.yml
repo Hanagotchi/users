@@ -7,6 +7,6 @@ run:
       - python clock.py
     image: web
   worker:
+    command: 
       - python worker.py
     image: web
-

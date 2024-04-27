@@ -14,10 +14,10 @@ logging.basicConfig(
 
 
 async def async_heavy_endpoint(id_device: str):
-    print('Async RQ test: The param is: ' + id_device)
+    logger.info('Async RQ test: The param is: ' + id_device)
     await asyncio.sleep(30)
 
-    print('Async RQ test: Done')
+    logger.info('Async RQ test: Done')
 
 
 def heavy_endpoint(id_device: str):

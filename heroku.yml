@@ -6,3 +6,7 @@ run:
     command: 
       - python clock.py
     image: web
+  worker:
+      - python worker.py
+    image: web
+

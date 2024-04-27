@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import os
 import logging
 
@@ -14,10 +15,11 @@ logging.basicConfig(
 
 
 async def async_heavy_endpoint(id_device: str):
-    logger.info('Async RQ test: The param is: ' + id_device)
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f"[{time}] Async RQ test: The param is: {id_device}")
     await asyncio.sleep(30)
-
-    logger.info('Async RQ test: Done')
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f"[{time}] Async RQ test: The param is: {id_device}")
 
 
 def heavy_endpoint(id_device: str):

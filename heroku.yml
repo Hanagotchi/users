@@ -1,6 +1,12 @@
 build:
   docker:
     web: Dockerfile.prod
+# Estos 2 procesos se ejecutan en background desde el proceso "web" en entrypoint-heroku.yml
+# Si descomentamos esto, se debe escalar 2 nuevos procesos en panel de heroku
+# heroku ps:scale clock=1
+# heroku ps:scale worker=1
+# No hace falta ya... pero es interesante por si uno quisiera escalar con mas procesos
+# un mismo ejecutable... lo dejo documentado por curioso, je
 # run:
 #   clock:
 #     command: 

@@ -3,6 +3,7 @@
 import os
 import logging
 import redis
+import asyncio
 from rq import Queue, Connection
 from rq.worker import HerokuWorker as Worker
 
@@ -21,10 +22,15 @@ redis_url = os.getenv('REDIS_URL')
 
 conn = redis.from_url(redis_url)
 
-if __name__ == '__main__':
+
+async def fun():
     with Connection(conn):
         queue = Queue(connection=conn)
         queue.empty()
         worker = Worker(map(Queue, listen))
         worker.clean_registries()
         worker.work()
+
+
+if __name__ == '__main__':
+    asyncio.run(fun())

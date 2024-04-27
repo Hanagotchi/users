@@ -18,7 +18,7 @@ async def tick():
 if __name__ == '__main__':
     logger = init_logging('clock')
     INTERVAL_SCHEDULE_SECS = int(os.environ.get('INTERVAL_SCHEDULE_SECS', 5))
-    logger.info('Starting scheduler with interval %s' % INTERVAL_SCHEDULE_SECS)
+    logger.info('Starting scheduler. Interval %s' % INTERVAL_SCHEDULE_SECS)
     scheduler = AsyncIOScheduler()
     scheduler.add_job(tick, 'interval', seconds=INTERVAL_SCHEDULE_SECS)
     scheduler.start()

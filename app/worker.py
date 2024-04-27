@@ -1,36 +1,40 @@
-
-# https://python-rq.org/patterns/
-import os
-import logging
-import redis
 import asyncio
-from rq import Queue, Connection
-from rq.worker import HerokuWorker as Worker
+import os
+from datetime import datetime
+from arq.connections import RedisSettings
+from arq import Worker
+from httpx import AsyncClient
+from .logs import init_logging
 
 
-logger = logging.getLogger("worker")
-logging_level = os.environ.get("LOGGING_LEVEL", "DEBUG")
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging_level,
-    datefmt='%Y-%m-%d %H:%M:%S',
-)
-
-listen = ['high', 'default', 'low']
-
-redis_url = os.getenv('REDIS_URL')
-
-conn = redis.from_url(redis_url)
+logger = init_logging('worker')
+redis_url = os.environ.get('REDIS_URL')
 
 
-async def fun():
-    with Connection(conn):
-        queue = Queue(connection=conn)
-        queue.empty()
-        worker = Worker(map(Queue, listen))
-        worker.clean_registries()
-        worker.work()
+async def startup(ctx: Worker) -> None:
+    logger.info("Worker Started")
+    ctx['session'] = AsyncClient()
 
 
-if __name__ == '__main__':
-    asyncio.run(fun())
+async def shutdown(ctx: Worker) -> None:
+    logger.info("Worker end")
+    await ctx['session'].aclose()
+
+
+async def heavy_endpoint(ctx: Worker, id_user: str):
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # session: AsyncClient = ctx['session']
+    # fb = 'https://facebook.com'
+    # response = await session.get(fb)
+    # print(f'[{time}] {fb}: {response.text:.80}...')
+    print(f'[{time}] sleep startesd for {id_user}')
+    await asyncio.sleep(30)
+    print(f'[{time}] sleep finished for {id_user}')
+
+
+class WorkerSettings:
+    functions = [heavy_endpoint]
+    on_startup = startup
+    on_shutdown = shutdown
+    redis_settings = RedisSettings.from_dsn(redis_url)
+    handle_signals = False

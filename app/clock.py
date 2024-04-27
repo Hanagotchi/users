@@ -1,30 +1,32 @@
+import asyncio
 import os
-import logging
-from apscheduler.schedulers.blocking import BlockingScheduler
-from rq import Queue
-from heavy_endpoint import async_heavy_endpoint_wrapper
-from worker import conn
-
-sched = BlockingScheduler()
-
-# DEBUG, INFO, WARNING, ERROR, CRITICAL
-logger = logging.getLogger("clock")
-logging_level = os.environ.get("LOGGING_LEVEL", "DEBUG")
-logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
-    level=logging_level,
-    datefmt='%Y-%m-%d %H:%M:%S',
-)
-q = Queue(connection=conn)
+from datetime import datetime
+from arq import create_pool
+from arq.connections import RedisSettings
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from logs import init_logging
 
 
-@sched.scheduled_job('interval', minutes=0.10)
-def timed_job2():
-    logger.info('This job is run every .. seconds.')
-    id_device = "pepito73"
-    q.enqueue(async_heavy_endpoint_wrapper, id_device)
-    logger.info('Job enqueued, bye...')
+async def tick():
+    now = datetime.now()
+    logger.info('Tick! Prepare to enqueue job at: %s' % now)
+    await redis.enqueue_job('heavy_endpoint', 'FEDE time % s' % now)
+    logger.info('Tock! Enqueued job at: %s' % datetime.now())
+
+INTERVAL_SCHEDULE = 5
 
 
-logger.info('Ready to start the scheduler...')
-sched.start()
+if __name__ == '__main__':
+    logger = init_logging('clock')
+    logger.info('Starting scheduler with interval %s' % INTERVAL_SCHEDULE)
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(tick, 'interval', seconds=INTERVAL_SCHEDULE)
+    scheduler.start()
+    redis_url = os.environ.get('REDIS_URL')
+    redis = asyncio.get_event_loop() \
+        .run_until_complete(create_pool(RedisSettings.from_dsn(redis_url)))
+
+    try:
+        asyncio.get_event_loop().run_forever()
+    except (KeyboardInterrupt, SystemExit):
+        pass

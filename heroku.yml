@@ -8,5 +8,5 @@ run:
     image: web
   worker:
     command: 
-      - python worker.py
+      - arq app.worker.WorkerSettings
     image: web

@@ -10,10 +10,10 @@ from logs import init_logging
 
 async def tick():
     now = datetime.now()
-    logger.info('Tick! Prepare to enqueue job at: %s' % now)
     id_device = random.randint(0, 99999)
+    logger.info(f"[{id_device} {now}] Tock! Enqueuing job")
     await redis.enqueue_job('heavy_endpoint', id_device)
-    logger.info('Tock! Enqueued job at: %s' % datetime.now())
+    logger.info(f"[{id_device} {now}] Job enqueued")
 
 if __name__ == '__main__':
     logger = init_logging('clock')

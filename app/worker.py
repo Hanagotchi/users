@@ -21,15 +21,15 @@ async def shutdown(ctx: Worker) -> None:
     await ctx['session'].aclose()
 
 
-async def heavy_endpoint(ctx: Worker, id_user: str):
-    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{time}] starting heavy endpoint for {id_user}')
+async def heavy_endpoint(ctx: Worker, id_device: str):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f"[{id_device} {now}] Calling heavy endpoint...")
     session: AsyncClient = ctx['session']
     secs_delay = 10
     url = 'https://httpbin.org/delay/%s' % secs_delay
     response = await session.get(url)
-    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{time}] response for {id_user}: {response.json()}')
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f'[{id_device} {now}] Succesfuly called heavy endpoint. Response: {response.json()}')
 
 
 class WorkerSettings:

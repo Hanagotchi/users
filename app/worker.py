@@ -23,13 +23,13 @@ async def shutdown(ctx: Worker) -> None:
 
 async def heavy_endpoint(ctx: Worker, id_user: str):
     time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # session: AsyncClient = ctx['session']
-    # fb = 'https://facebook.com'
-    # response = await session.get(fb)
-    # print(f'[{time}] {fb}: {response.text:.80}...')
-    print(f'[{time}] sleep startesd for {id_user}')
-    await asyncio.sleep(30)
-    print(f'[{time}] sleep finished for {id_user}')
+    logger.info(f'[{time}] sleep start for {id_user}')
+    session: AsyncClient = ctx['session']
+    url = 'https://hub.dummyapis.com/delay?seconds=15'
+    response = await session.get(url)
+    time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f'[{time}] response for {id_user}: {response.json()}')
+    logger.info(f'[{time}] sleep finished for {id_user}')
 
 
 class WorkerSettings:

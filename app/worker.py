@@ -8,12 +8,12 @@ from logs import init_logging
 
 logger = init_logging('worker')
 redis_url = os.environ.get('REDIS_URL')
-TIMEOUT_SECS = 30
+TIMEOUT_SECS_HTTX_CLIENT = 30
 
 
 async def startup(ctx: Worker) -> None:
     logger.info("Worker Started")
-    ctx['session'] = AsyncClient(timeout=30)
+    ctx['session'] = AsyncClient(timeout=TIMEOUT_SECS_HTTX_CLIENT)
 
 
 async def shutdown(ctx: Worker) -> None:
@@ -29,7 +29,8 @@ async def heavy_endpoint(ctx: Worker, id_device: str):
     url = 'https://httpbin.org/delay/%s' % secs_delay
     response = await session.get(url)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{id_device} {now}] Succesfuly called heavy endpoint. Response: {response.json()}')
+    logger.info(f'[{id_device} {now}] Succesfuly called'
+                f' heavy endpoint. Response: {response.json()}')
 
 
 class WorkerSettings:

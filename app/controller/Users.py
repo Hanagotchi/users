@@ -1,4 +1,4 @@
-from fastapi import status
+from fastapi import status, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from service.Social import SocialService
@@ -64,7 +64,8 @@ class UsersController:
             headers={"x-access-token": f"{jwt_token}"},
         )
 
-    def handle_update_user(self, user_id: int, update_data: dict):
+    def handle_update_user(self, update_data: dict, request: Request):
+        user_id = self.users_service.retrieve_user_id(request)
         self.users_service.update_user(user_id, update_data)
         return {
             "message": "User updated successfully",

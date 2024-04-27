@@ -8,11 +8,12 @@ from logs import init_logging
 
 logger = init_logging('worker')
 redis_url = os.environ.get('REDIS_URL')
+TIMEOUT_SECS = 30
 
 
 async def startup(ctx: Worker) -> None:
     logger.info("Worker Started")
-    ctx['session'] = AsyncClient()
+    ctx['session'] = AsyncClient(timeout=30)
 
 
 async def shutdown(ctx: Worker) -> None:

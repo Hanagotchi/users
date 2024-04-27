@@ -1,8 +1,8 @@
 import os
 import logging
-import redis
 from apscheduler.schedulers.blocking import BlockingScheduler
 from rq import Queue
+from worker import conn
 
 sched = BlockingScheduler()
 
@@ -14,9 +14,6 @@ logging.basicConfig(
     level=logging_level,
     datefmt='%Y-%m-%d %H:%M:%S',
 )
-redis_url = os.getenv('REDIS_URL')
-
-conn = redis.from_url(redis_url)
 q = Queue(connection=conn)
 
 

@@ -24,19 +24,27 @@ async def shutdown(ctx: Worker) -> None:
     ctx['users_repository'].shutdown()
 
 
-async def heavy_endpoint(ctx: Worker, id_device: str):
+async def heavy_endpoint(ctx: Worker, random_value: str):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f"[{id_device} {now}] Calling heavy endpoint...")
-    session: AsyncClient = ctx['session']
-    user_repository: UsersRepository = ctx['users_repository']
-    user_id_one = user_repository.get_user(1)
-    logger.info(f"[{id_device} {now}] User 1: {user_id_one}")
+    logger.info(f"[{random_value}] [{now}] Calling heavy endpoint...")
+    # Busco simular llamado a un endpoint que me TARDE MUCHISIMO
+    # en responder. En este caso, 10 segs.
+    # (mismo puede ser un llamado LENTO a una base de datos, etc.)
     secs_delay = 10
+    session: AsyncClient = ctx['session']
     url = 'https://httpbin.org/delay/%s' % secs_delay
     response = await session.get(url)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{id_device} {now}] Succesfuly called'
+    logger.info(f'[{random_value}] [{now}] Succesfuly called'
                 f' heavy endpoint. Response: {response.json()}')
+
+    # Tambien podemos acceder a la capa de repositorio...
+    # (aquí es donde habría que consultar al CRUD de Alarmas,
+    #  buscar si en el minuto actual hay alguna alarma
+    #  de algún usuario, y si la hay, enviar una notificación)
+    user_repository: UsersRepository = ctx['users_repository']
+    user_id_one = user_repository.get_user(1)
+    logger.info(f"[{random_value}] [{now}] User 1: {user_id_one}")
 
 
 class WorkerSettings:

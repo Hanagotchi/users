@@ -26,7 +26,7 @@ if __name__ == '__main__':
         queue = Queue(connection=conn)
         print('Queue elements:', queue.count)
         queue.empty()
-        print('Queue elements:', queue.counts)
+        print('Queue elements:', queue.count)
         worker = Worker(map(queue, listen))
         logger.info('Ready to start the worker...')
         worker.work()

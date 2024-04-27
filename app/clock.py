@@ -1,6 +1,7 @@
 import asyncio
 import os
 from datetime import datetime
+import random
 from arq import create_pool
 from arq.connections import RedisSettings
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -10,7 +11,8 @@ from logs import init_logging
 async def tick():
     now = datetime.now()
     logger.info('Tick! Prepare to enqueue job at: %s' % now)
-    await redis.enqueue_job('heavy_endpoint', 'FEDE time % s' % now)
+    id_device = random.randint(0, 99999)
+    await redis.enqueue_job('heavy_endpoint', id_device)
     logger.info('Tock! Enqueued job at: %s' % datetime.now())
 
 INTERVAL_SCHEDULE_SECS = 60

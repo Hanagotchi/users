@@ -13,14 +13,14 @@ async def tick():
     await redis.enqueue_job('heavy_endpoint', 'FEDE time % s' % now)
     logger.info('Tock! Enqueued job at: %s' % datetime.now())
 
-INTERVAL_SCHEDULE = 5
+INTERVAL_SCHEDULE_SECS = 60
 
 
 if __name__ == '__main__':
     logger = init_logging('clock')
-    logger.info('Starting scheduler with interval %s' % INTERVAL_SCHEDULE)
+    logger.info('Starting scheduler with interval %s' % INTERVAL_SCHEDULE_SECS)
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(tick, 'interval', seconds=INTERVAL_SCHEDULE)
+    scheduler.add_job(tick, 'interval', seconds=INTERVAL_SCHEDULE_SECS)
     scheduler.start()
     redis_url = os.environ.get('REDIS_URL')
     redis = asyncio.get_event_loop() \

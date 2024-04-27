@@ -8,3 +8,5 @@ requests_oauthlib
 pyjwt
 httpx
 APScheduler>=3.10,<4.0
+redis>=3
+rq>=0.13

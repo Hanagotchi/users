@@ -41,7 +41,10 @@ async def heavy_endpoint(ctx: Worker, random_value: str):
     # Tambien podemos acceder a la capa de repositorio...
     # (aquí es donde habría que consultar al CRUD de Alarmas,
     #  buscar si en el minuto actual hay alguna alarma
-    #  de algún usuario, y si la hay, enviar una notificación)
+    #  de algún usuario, y si la hay, enviar una notificación.
+    # NO importa lo lento que sea esto, porque es un worker!!
+    # El fin de este worker es hacer tareas pesadas, por algo
+    # tambien es asincrónico)
     user_repository: UsersRepository = ctx['users_repository']
     user_id_one = user_repository.get_user(1)
     logger.info(f"[{random_value}] [{now}] User 1: {user_id_one}")

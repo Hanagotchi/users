@@ -16,5 +16,7 @@ def heavy_endpoint(id_device: str):
     logger.info(f'Heavy endpoint started for device {id_device}')
     # sleep 3 min
     import time
-    time.sleep(180)
-    return "jaja, termineeeee XDDXDXDXDXDXDXDX pusheado a firebase!!!!"
+    time.sleep(30)
+    result = "jaja, termineeeee XDDXDXDXDXDXDXDX pusheado a firebase!!!!"
+    logger.info(f'Heavy endpoint finished for device {id_device}')
+    return result

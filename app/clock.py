@@ -18,9 +18,9 @@ logging.basicConfig(
 q = Queue(connection=conn)
 
 
-@sched.scheduled_job('interval', minutes=1)
+@sched.scheduled_job('interval', minutes=0.25)
 def timed_job2():
-    logger.info('This job is run every one minute.')
+    logger.info('This job is run every 15 seconds.')
     id_device = "pepito73"
     q.enqueue(heavy_endpoint, id_device)
     logger.info('Job enqueued, bye...')

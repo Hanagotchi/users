@@ -12,9 +12,9 @@ logging.basicConfig(
 )
 
 
-def heavy_endpoint():
-    logger.info('This job is very heavy ....')
+def heavy_endpoint(id_device: str):
+    logger.info(f'Heavy endpoint started for device {id_device}')
     # sleep 3 min
     import time
     time.sleep(180)
-    return "jaja, termineeeee xddxdx pusheado a firebase!!!!"
+    return "jaja, termineeeee XDDXDXDXDXDXDXDX pusheado a firebase!!!!"

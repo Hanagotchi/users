@@ -1,12 +1,12 @@
 build:
   docker:
     web: Dockerfile.prod
-run:
-  clock:
-    command: 
-      - python clock.py
-    image: web
-  worker:
-    command: 
-      - arq worker.WorkerSettings
-    image: web
+# run:
+#   clock:
+#     command: 
+#       - python clock.py
+#     image: web
+#   worker:
+#     command: 
+#       - arq worker.WorkerSettings
+#     image: web

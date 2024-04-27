@@ -2,6 +2,7 @@ import os
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from rq import Queue
+from users.app import heavy_endpoint
 from worker import conn
 
 sched = BlockingScheduler()
@@ -15,14 +16,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
 )
 q = Queue(connection=conn)
-
-
-def heavy_endpoint():
-    logger.info('This job is very heavy ....')
-    # sleep 3 min
-    import time
-    time.sleep(180)
-    return "jaja, termineeeee xddxdx pusheado a firebase!!!!"
 
 
 @sched.scheduled_job('interval', minutes=1)

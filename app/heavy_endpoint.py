@@ -30,3 +30,9 @@ def heavy_endpoint(id_device: str):
     result = "jaja, termineeeee XDDXDXDXDXDXDXDX pusheado a firebase!!!!"
     logger.info(f'Heavy endpoint finished for device {id_device}')
     return result
+
+
+def async_heavy_endpoint_wrapper(*args, **kwargs):
+    loop = asyncio.get_event_loop()
+    coro = async_heavy_endpoint(*args, **kwargs)
+    loop.create_task(coro)

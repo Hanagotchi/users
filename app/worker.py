@@ -27,4 +27,4 @@ if __name__ == '__main__':
         queue.empty()
         worker = Worker(map(Queue, listen))
         worker.clean_registries()
-        worker.work(burst=True)
+        worker.work()

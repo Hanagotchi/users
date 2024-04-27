@@ -2,7 +2,7 @@ import os
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from rq import Queue
-from heavy_endpoint import async_heavy_endpoint
+from heavy_endpoint import async_heavy_endpoint_wrapper
 from worker import conn
 
 sched = BlockingScheduler()
@@ -22,7 +22,7 @@ q = Queue(connection=conn)
 def timed_job2():
     logger.info('This job is run every .. seconds.')
     id_device = "pepito73"
-    q.enqueue(async_heavy_endpoint, id_device)
+    q.enqueue(async_heavy_endpoint_wrapper, id_device)
     logger.info('Job enqueued, bye...')
 
 

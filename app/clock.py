@@ -2,7 +2,7 @@ import os
 import logging
 from apscheduler.schedulers.blocking import BlockingScheduler
 from rq import Queue
-from app import heavy_endpoint
+from heavy_endpoint import heavy_endpoint
 from worker import conn
 
 sched = BlockingScheduler()

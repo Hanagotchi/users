@@ -8,5 +8,5 @@ run:
     image: web
   worker:
     command: 
-      - arq app.worker.WorkerSettings
+      - arq worker.WorkerSettings
     image: web

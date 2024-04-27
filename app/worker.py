@@ -4,7 +4,7 @@ from datetime import datetime
 from arq.connections import RedisSettings
 from arq import Worker
 from httpx import AsyncClient
-from .logs import init_logging
+from logs import init_logging
 
 
 logger = init_logging('worker')

@@ -63,7 +63,7 @@ async def alarm_manager(ctx: Worker, date_time: datetime):
                                                          date_time))
             tasks.append(task)
 
-        logger.debug("Wating for all tasks to finish...")
+        logger.debug("Waiting for all tasks to finish...")
         await asyncio.gather(*tasks)
         logger.info(f"All alarms notified at {date_time}")
     except Exception as e:

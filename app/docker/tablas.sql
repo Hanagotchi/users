@@ -31,7 +31,7 @@ VALUES ('Agus', 'agus@fi.uba.ar', TO_DATE('1999-01-29', 'YYYY-MM-DD'), '{"lat": 
 
 CREATE TABLE IF NOT EXISTS users_service.alarms (
     id SERIAL PRIMARY KEY,
-    id_user INT UNIQUE NOT NULL REFERENCES users_service.users(id) ON DELETE CASCADE,
+    id_user INT NOT NULL REFERENCES users_service.users(id) ON DELETE CASCADE,
     datetime TIMESTAMP WITH TIME ZONE NOT NULL,
     content VARCHAR(128) NOT NULL
 );
@@ -40,12 +40,12 @@ CREATE INDEX idx_alarms_datetime ON users_service.alarms(datetime);
 
 INSERT INTO
     users_service.alarms (id_user, datetime, content)
-VALUES (1, '2024-04-29 03:10:00-03', 'Wake up 1!'),
-    (2, '2024-04-29 03:10:00-03', 'Wake up 2!'),
-    (3, '2024-04-29 03:20:00-03', 'Wake up 3!'),
-    (4, '2024-04-29 03:20:00-03', 'Wake up 4!');
+VALUES (1, '2024-04-29 02:15:00-03', 'Wake up 1!'),
+    (2, '2024-04-29 02:15:00-03', 'Wake up 2!'),
+    (3, '2024-04-29 02:25:00-03', 'Wake up 3!'),
+    (4, '2024-04-29 02:25:00-03', 'Wake up 4!');
 
 -- SELECT users_service.alarms.id, users_service.alarms.content, users_service.users.device_token
 -- FROM users_service.alarms 
 -- INNER JOIN users_service.users ON users_service.alarms.id_user = users_service.users.id 
--- WHERE users_service.alarms.datetime = '2021-06-01 11:01:00';`
+-- WHERE users_service.alarms.datetime = '2024-04-29 02:15:00-03';

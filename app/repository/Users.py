@@ -107,7 +107,7 @@ class UsersRepository:
                                                                str,
                                                                str]]:
         """
-        Retrieves a list of tuples containing the alarm content and the
+        Retrieves a list of tuples containing the alarm id, content and the
         device_token of users who have an alarm scheduled for the
         given datetime.
         Args:

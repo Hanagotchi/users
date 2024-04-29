@@ -19,8 +19,11 @@ if __name__ == '__main__':
     logger.info('Starting scheduler. Interval %s' % INTERVAL_SCHEDULE_SECS)
 
     scheduler = AsyncIOScheduler()
+
     scheduler.add_job(tick,
-                      'interval', seconds=INTERVAL_SCHEDULE_SECS)
+                      'cron',
+                      minute='0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55',
+                      second='0')
     scheduler.start()
 
     redis_url = os.environ.get('REDIS_URL')

@@ -40,12 +40,12 @@ CREATE INDEX idx_alarms_datetime ON users_service.alarms(datetime);
 
 INSERT INTO
     users_service.alarms (id_user, datetime, content)
-VALUES (1, '2024-04-29 03:22:00-03', 'Wake up 1!'),
-    (2, '2024-04-29 03:22:00-03', 'Wake up 2!'),
-    (3, '2024-04-29 03:29:00-03', 'Wake up 3!'),
-    (4, '2024-04-29 03:29:00-03', 'Wake up 4!');
+VALUES (1, '2024-04-29 03:10:00-03', 'Wake up 1!'),
+    (2, '2024-04-29 03:10:00-03', 'Wake up 2!'),
+    (3, '2024-04-29 03:20:00-03', 'Wake up 3!'),
+    (4, '2024-04-29 03:20:00-03', 'Wake up 4!');
 
--- SELECT users_service.alarms.content, users_service.users.device_token
+-- SELECT users_service.alarms.id, users_service.alarms.content, users_service.users.device_token
 -- FROM users_service.alarms 
 -- INNER JOIN users_service.users ON users_service.alarms.id_user = users_service.users.id 
 -- WHERE users_service.alarms.datetime = '2021-06-01 11:01:00';`

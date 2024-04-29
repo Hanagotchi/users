@@ -128,8 +128,3 @@ class UsersRepository:
                             .filter(Alarm.datetime == date_time)
         result = query.all()
         return result
-
-    @withSQLExceptionsHandle()
-    def delete_alarms(self, ids: list[int]):
-        self.session.query(Alarm).filter(Alarm.id.in_(ids)).delete()
-        self.session.commit()

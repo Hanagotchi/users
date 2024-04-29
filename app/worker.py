@@ -48,11 +48,8 @@ async def alarm_manager(ctx: Worker, date_time: datetime):
             logger.debug(f"No alarms to notify at {date_time}")
             return
         tasks = []
-        ids_alarm_to_delete = []
         logger.info(f"Found {len(result)} alarms to notify at {date_time}")
         for (id, content, device_token) in result:
-            ids_alarm_to_delete.append(id)
-
             if device_token is None:
                 logger.debug(f"Alarm with id {id} has no device_token. "
                              f"Skipping...")
@@ -66,9 +63,6 @@ async def alarm_manager(ctx: Worker, date_time: datetime):
                                                          date_time))
             tasks.append(task)
 
-        logger.debug(f"While tasks are running, deleting "
-                     f"{len(ids_alarm_to_delete)} alarms...")
-        user_repository.delete_alarms(ids_alarm_to_delete)
         logger.debug("Wating for all tasks to finish...")
         await asyncio.gather(*tasks)
         logger.info(f"All alarms notified at {date_time}")

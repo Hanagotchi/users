@@ -1,20 +1,91 @@
 import os
+import asyncio
+from arq import Worker
+from logs import init_logging
+from httpx import AsyncClient
 from datetime import datetime
 from arq.connections import RedisSettings
-from arq import Worker
-from httpx import AsyncClient
-from logs import init_logging
 from repository.Users import UsersRepository
-
 
 logger = init_logging('worker')
 redis_url = os.environ.get('REDIS_URL')
-TIMEOUT_SECS_HTTX_CLIENT = 30
+TIMEOUT_SECS_HTTPX_CLIENT = 30
+
+
+async def send_notification(ctx: Worker,
+                            device_token: str,
+                            content: str,
+                            date_time: datetime):
+    logger.info(f"Sending alarm notification to "
+                f"{device_token} with content: {content} at {date_time}")
+    # este es un ejemplo usando httpx para hacer un request a un endpoint
+    # de forma asincrona,
+    # simulando que es un request a firebase para enviar una notificacion
+
+    secs_delay = 1
+    random_value = int(datetime.now().timestamp())
+    session: AsyncClient = ctx['session']
+    url = 'https://httpbin.org/delay/%s' % secs_delay
+    response = await session.get(url)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f'[{random_value}] [{now}] Succesfuly called'
+                f' firebase endpoint. Response: {response.json()}')
+
+    # buscar que el endpoint de firebase para enviar notificaciones
+    # sea ASYNC, asi no bloquea el worker y se logra aprovechar
+    # el envio de notificaciones en paralelo con la programacion asincrona
+    #
+    # ...si hubiera que hacerlo sincrono, el llamado a firebase
+    # terminaria siendo secuencial para N notificaciones, y no es eficiente...
+
+
+async def alarm_manager(ctx: Worker, date_time: datetime):
+    try:
+        logger.debug(f"Checking alarms for {date_time}")
+        user_repository: UsersRepository = ctx['users_repository']
+        result = user_repository.get_users_to_notify(date_time)
+        if len(result) == 0:
+            logger.debug(f"No alarms to notify at {date_time}")
+            return
+        tasks = []
+        ids_alarm_to_delete = []
+        logger.info(f"Found {len(result)} alarms to notify at {date_time}")
+        for (id, content, device_token) in result:
+            ids_alarm_to_delete.append(id)
+
+            if device_token is None:
+                logger.debug(f"Alarm with id {id} has no device_token. "
+                             f"Skipping...")
+                continue
+            logger.debug(f"Preparing task to send notification to "
+                         f"{device_token} with content: "
+                         f"{content} at {date_time}")
+            task = asyncio.create_task(send_notification(ctx,
+                                                         device_token,
+                                                         content,
+                                                         date_time))
+            tasks.append(task)
+
+        logger.debug(f"While tasks are running, deleting "
+                     f"{len(ids_alarm_to_delete)} alarms...")
+        user_repository.delete_alarms(ids_alarm_to_delete)
+        logger.debug("Wating for all tasks to finish...")
+        await asyncio.gather(*tasks)
+        logger.info(f"All alarms notified at {date_time}")
+    except Exception as e:
+        logger.error(f"Error while processing alarms on {date_time}. "
+                     f"Detail: {e}")
+        # NO raise e, porque sino el worker se cae y no se procesan
+        # los proximos eventos de alarma
+
+        # lo ideal seria enviar informacion del error a un sistema de
+        # monitoreo para que se pueda analizar y corregir el posible bug
+        pass
 
 
 async def startup(ctx: Worker) -> None:
     logger.info("Worker Started")
-    ctx['session'] = AsyncClient(timeout=TIMEOUT_SECS_HTTX_CLIENT)
+    ctx['session'] = AsyncClient(timeout=TIMEOUT_SECS_HTTPX_CLIENT)
     ctx['users_repository'] = UsersRepository()
 
 
@@ -24,34 +95,8 @@ async def shutdown(ctx: Worker) -> None:
     ctx['users_repository'].shutdown()
 
 
-async def heavy_endpoint(ctx: Worker, random_value: str):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f"[{random_value}] [{now}] Calling heavy endpoint...")
-    # Busco simular llamado a un endpoint que me TARDE MUCHISIMO
-    # en responder. En este caso, 10 segs.
-    # (mismo puede ser un llamado LENTO a una base de datos, etc.)
-    secs_delay = 10
-    session: AsyncClient = ctx['session']
-    url = 'https://httpbin.org/delay/%s' % secs_delay
-    response = await session.get(url)
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{random_value}] [{now}] Succesfuly called'
-                f' heavy endpoint. Response: {response.json()}')
-
-    # Tambien podemos acceder a la capa de repositorio...
-    # (aquí es donde habría que consultar al CRUD de Alarmas,
-    #  buscar si en el minuto actual hay alguna alarma
-    #  de algún usuario, y si la hay, enviar una notificación.
-    # NO importa lo lento que sea esto, porque es un worker!!
-    # El fin de este worker es hacer tareas pesadas, por algo
-    # tambien es asincrónico)
-    user_repository: UsersRepository = ctx['users_repository']
-    user_id_one = user_repository.get_user(1)
-    logger.info(f"[{random_value}] [{now}] User 1: {user_id_one}")
-
-
 class WorkerSettings:
-    functions = [heavy_endpoint]
+    functions = [alarm_manager]
     on_startup = startup
     on_shutdown = shutdown
     redis_settings = RedisSettings.from_dsn(redis_url)

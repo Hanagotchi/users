@@ -14,9 +14,7 @@ async def tick():
     logger.info(f"[Tock! Job enqueued for {date_time_to_check}")
 
 if __name__ == '__main__':
-    INTERVAL_SCHEDULE_SECS = os.environ.get('INTERVAL_SCHEDULE_SECS', 5)
     logger = init_logging('clock')
-    logger.info('Starting scheduler. Interval %s' % INTERVAL_SCHEDULE_SECS)
 
     scheduler = AsyncIOScheduler()
 

@@ -17,7 +17,6 @@ if __name__ == '__main__':
     logger = init_logging('clock')
 
     scheduler = AsyncIOScheduler()
-
     scheduler.add_job(tick,
                       'cron',
                       minute='0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55',

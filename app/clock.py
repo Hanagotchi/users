@@ -1,15 +1,18 @@
 import os
+import pytz
 import asyncio
 from arq import create_pool
 from logs import init_logging
-from datetime import datetime, timezone
+from datetime import datetime
 from arq.connections import RedisSettings
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+tz = pytz.timezone(os.environ.get('TZ', 'America/Argentina/Buenos_Aires'))
 
 
 async def tick():
     date_time_to_check = datetime.\
-        now(timezone.utc).replace(second=0, microsecond=0)
+        now(tz).replace(second=0, microsecond=0)
     logger.info(f"[Tick! Enqueuing job for {date_time_to_check} (UTC)]")
     await redis.enqueue_job('alarm_manager', date_time_to_check)
     logger.info(f"[Tock! Job enqueued for {date_time_to_check} (UTC)")

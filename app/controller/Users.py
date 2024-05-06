@@ -1,4 +1,4 @@
-from fastapi import status, Request
+from fastapi import status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from service.Social import SocialService

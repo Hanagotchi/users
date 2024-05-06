@@ -1,10 +1,17 @@
-from fastapi import FastAPI, Request, Query
+from fastapi import Depends, FastAPI, Query
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
-from schemas.Schemas import CreateUserSchema, UpdateUserSchema
-from schemas.Schemas import LoginRequest
 from typing import List, Annotated, Union
+from schemas.Schemas import (
+    CreateUserSchema,
+    UpdateUserSchema,
+    LoginRequest,
+    CreateNotificationSchema
+)
+from security.JWTBearer import get_current_user_id
+from logs import init_logging
+logger = init_logging('user-repository')
 
 app = FastAPI()
 users_repository = UsersRepository()
@@ -17,13 +24,14 @@ def root():
     return {"message": "users service"}
 
 
-@app.get("/users/{user_id}")
-def get_users(user_id: int):
+@app.get("/users/me")
+def get_users(user_id: Annotated[int, Depends(get_current_user_id)]):
     return users_controller.handle_get_user(user_id)
 
 
 @app.get("/users")
-def get_all_users(ids: Annotated[Union[List[str], None], Query()] = None):
+def get_all_users(_: Annotated[int, Depends(get_current_user_id)],
+                  ids: Annotated[Union[List[str], None], Query()] = None):
     return users_controller.handle_get_all_users(ids)
 
 
@@ -39,6 +47,16 @@ async def login_with_google(request: LoginRequest):
 
 @app.patch("/users/me")
 async def update_user(update_data: UpdateUserSchema,
-                      request: Request):
-    return users_controller.handle_update_user(update_data.dict(),
-                                               request)
+                      user_id: Annotated[int, Depends(get_current_user_id)]):
+    return users_controller.handle_update_user(update_data.dict(), user_id)
+
+
+@app.post("/users/me/notification")
+async def create_notification(
+    user_id: Annotated[int,
+                       Depends(get_current_user_id)],
+    create_notification: CreateNotificationSchema
+):
+    logger.info(f"Creating notification for user {user_id}")
+    return users_controller.handle_create_notification(
+        create_notification.dict(), user_id)

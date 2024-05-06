@@ -96,10 +96,12 @@ class UsersRepository:
         self.session.commit()
         return user
 
-    def __parse_result(self, result):
-        if not result:
-            return []
-        return [r.__dict__ for r in result]
+    @withSQLExceptionsHandle()
+    def create_notification(self, user_id: int, notification_data: dict):
+        alarm = Alarm(**notification_data, id_user=user_id)
+        self.session.add(alarm)
+        self.session.commit()
+        return alarm
 
     @withSQLExceptionsHandle()
     def get_users_to_notify(self,
@@ -128,3 +130,8 @@ class UsersRepository:
                             .filter(Alarm.datetime == date_time)
         result = query.all()
         return result
+
+    def __parse_result(self, result):
+        if not result:
+            return []
+        return [r.__dict__ for r in result]

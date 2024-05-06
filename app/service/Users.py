@@ -52,6 +52,14 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
+    def create_notification(self, user_id: int, notification_data: dict):
+        try:
+            self.user_repository.create_notification(user_id,
+                                                     notification_data)
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
+
     def _generate_nickname(self, name):
 
         name_without_spaces = name.replace(" ", "")

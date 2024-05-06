@@ -135,3 +135,31 @@ class UsersRepository:
         if not result:
             return []
         return [r.__dict__ for r in result]
+
+    @withSQLExceptionsHandle()
+    def get_users_to_notify(self,
+                            date_time: datetime) -> list[tuple[int,
+                                                               str,
+                                                               str]]:
+        """
+        Retrieves a list of tuples containing the alarm id, content and the
+        device_token of users who have an alarm scheduled for the
+        given datetime.
+        Args:
+            date_time (datetime): The date and time in ISO 8601 format with
+            timezone specified. For example, "2021-10-05T10:00:00-03:00"
+            represents October 5th, 2021 at 10:00 AM in Argentina Time
+            Zone (UTC-3). Seconds and microseconds are ignored.
+        Returns:
+            List[Tuple[int, str, str]]: A list of tuples containing
+            the alarm id, the alarm content, and the user's device_token.
+        """
+        date_time = date_time.replace(second=0, microsecond=0)
+        logger.info(f"Searching for alarms at {date_time}")
+        query = self.session.query(Alarm.id,
+                                   Alarm.content,
+                                   User.device_token)\
+                            .join(User, User.id == Alarm.id_user)\
+                            .filter(Alarm.datetime == date_time)
+        result = query.all()
+        return result

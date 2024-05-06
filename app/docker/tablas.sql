@@ -1,3 +1,4 @@
+-- SQLBook: Code
 CREATE SCHEMA IF NOT EXISTS users_service;
 
 CREATE TABLE IF NOT EXISTS users_service.users (

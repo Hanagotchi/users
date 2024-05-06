@@ -11,8 +11,7 @@ from schemas.Schemas import (
     UpdateNotificationSchema
 )
 from security.JWTBearer import get_current_user_id
-from logs import init_logging
-logger = init_logging('user-repository')
+
 
 app = FastAPI(
     title="Users API",
@@ -62,7 +61,6 @@ async def create_notification(
                        Depends(get_current_user_id)],
     create_notification: CreateNotificationSchema
 ):
-    logger.info(f"Creating notification for user {user_id}")
     return users_controller.handle_create_notification(
         create_notification.dict(), user_id)
 

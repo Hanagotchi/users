@@ -52,3 +52,14 @@ class CreateNotificationSchema(BaseModel):
         if v.minute % 5 != 0:
             raise ValueError('Minutes must be multiples of 5')
         return v
+
+
+class UpdateNotificationSchema(BaseModel):
+    date_time: Optional[datetime] = Field(..., alias='date_time')
+    content: Optional[str] = Field(..., max_length=128)
+
+    @validator('date_time')
+    def validate_date_time(cls, v):
+        if v.minute % 5 != 0:
+            raise ValueError('Minutes must be multiples of 5')
+        return v

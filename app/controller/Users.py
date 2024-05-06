@@ -66,15 +66,54 @@ class UsersController:
 
     def handle_update_user(self, update_data: dict, user_id: int):
         self.users_service.update_user(user_id, update_data)
-        return {
-            "message": "User updated successfully",
-            "status": status.HTTP_200_OK,
-        }
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder({
+                "message": "User updated successfully",
+                "status": status.HTTP_200_OK,
+            }),
+        )
 
     def handle_create_notification(self, notification_data: dict,
                                    user_id: int):
         self.users_service.create_notification(user_id, notification_data)
-        return {
-            "message": "Notification created successfully",
-            "status": status.HTTP_201_CREATED,
-        }
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content=jsonable_encoder({
+                "message": "Notification created successfully",
+                "status": status.HTTP_201_CREATED,
+            }),
+        )
+
+    def handle_get_notifications(self, user_id: int):
+        notifications = self.users_service.get_notifications(user_id)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder({
+                "message": notifications,
+                "status": status.HTTP_200_OK,
+            }),
+        )
+
+    def handle_delete_notification(self, user_id: int, notification_id: int):
+        self.users_service.delete_notification(user_id,
+                                               notification_id)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder({
+                "message": "Notification deleted successfully",
+                "status": status.HTTP_200_OK,
+            })
+        )
+
+    def handle_update_notification(self, user_id: int, notification_id: int,
+                                   update_data: dict):
+        self.users_service.update_notification(user_id, notification_id,
+                                               update_data)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder({
+                "message": "Notification updated successfully",
+                "status": status.HTTP_200_OK,
+            }),
+        )

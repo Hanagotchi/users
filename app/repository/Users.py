@@ -104,6 +104,34 @@ class UsersRepository:
         return alarm
 
     @withSQLExceptionsHandle()
+    def get_notification_owner(self, notification_id):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        return alarm.id_user if alarm else None
+
+    @withSQLExceptionsHandle()
+    def edit_notification(self, notification_id, update_data):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        for field, value in update_data.items():
+            setattr(alarm, field, value)
+
+        self.session.commit()
+        return alarm
+
+    @withSQLExceptionsHandle()
+    def get_notifications(self, user_id: int):
+        alarm = self.session.query(Alarm).filter_by(id_user=user_id).all()
+        return self.__parse_result(alarm)
+
+    @withSQLExceptionsHandle()
+    def delete_notification(self, notification_id):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        self.session.delete(alarm)
+        self.session.commit()
+
+    @withSQLExceptionsHandle()
     def get_users_to_notify(self,
                             date_time: datetime) -> list[tuple[int,
                                                                str,

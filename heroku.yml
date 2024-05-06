@@ -1,3 +1,24 @@
 build:
   docker:
     web: Dockerfile.prod
+  
+# Estos 2 procesos se ejecutan en background desde el proceso "web" en entrypoint-heroku.yml
+
+# PERO... si descomentamos esto, se debe escalar 2 nuevos procesos en panel de heroku
+#   heroku ps:scale clock=1
+#   heroku ps:scale worker=1
+#
+# No hace falta ya... para un MVP funciona... pero el problema es que esta todo en el proceso "Web"
+# no hay posibilidad de escalar el Worker... los workers son esos "agentes" encargados de ejecutar
+# tareas pesadas. Tener 1 solo es raro. PERO si queremos escalar hay que cambiar de plan en dyno.. 
+# 
+# Lo dejo documentado por curioso, jeee
+# run:
+#   clock:
+#     command: 
+#       - python clock.py
+#     image: web
+#   worker:
+#     command: 
+#       - arq worker.WorkerSettings
+#     image: web

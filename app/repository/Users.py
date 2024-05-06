@@ -155,7 +155,7 @@ class UsersRepository:
                                    Alarm.content,
                                    User.device_token)\
                             .join(User, User.id == Alarm.id_user)\
-                            .filter(Alarm.datetime == date_time)
+                            .filter(Alarm.date_time == date_time)
         result = query.all()
         return result
 

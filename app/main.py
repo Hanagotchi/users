@@ -30,14 +30,13 @@ def root():
     return {"message": "users service"}
 
 
-@app.get("/users/me", tags=["Users"])
-def get_users(user_id: Annotated[int, Depends(get_current_user_id)]):
+@app.get("/users/{user_id}", tags=["Users"])
+def get_users(user_id: int):
     return users_controller.handle_get_user(user_id)
 
 
 @app.get("/users", tags=["Users"])
-def get_all_users(_: Annotated[int, Depends(get_current_user_id)],
-                  ids: Annotated[Union[List[str], None], Query()] = None):
+def get_all_users(ids: Annotated[Union[List[str], None], Query()] = None):
     return users_controller.handle_get_all_users(ids)
 
 

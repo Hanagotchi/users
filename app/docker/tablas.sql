@@ -29,21 +29,22 @@ VALUES ('Agus', 'agus@fi.uba.ar', TO_DATE('1999-01-29', 'YYYY-MM-DD'), '{"lat": 
 --     ('Sofi', 'sofi@fi.uba.ar', TO_DATE('1998-04-26', 'YYYY-MM-DD'), '{"lat": 1190, "long": 500}', 'QWEQWE'),
 --     ('Violeta', 'violeta@fi.uba.ar', TO_DATE('1998-05-12', 'YYYY-MM-DD'), '{"lat": 330, "long": 2333}', 'ZXZXZX');
 
+DROP TABLE IF EXISTS users_service.alarms CASCADE;
+
 CREATE TABLE IF NOT EXISTS users_service.alarms (
     id SERIAL PRIMARY KEY,
     id_user INT NOT NULL REFERENCES users_service.users(id) ON DELETE CASCADE,
-    datetime TIMESTAMP WITH TIME ZONE NOT NULL,
+    date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     content VARCHAR(128) NOT NULL
 );
-
-CREATE INDEX idx_alarms_datetime ON users_service.alarms(datetime);
+CREATE INDEX idx_alarms_date_time ON users_service.alarms(date_time);
 
 INSERT INTO
-    users_service.alarms (id_user, datetime, content)
-VALUES (1, '2024-04-29 02:15:00-03', 'Wake up 1!'),
-    (2, '2024-04-29 02:15:00-03', 'Wake up 2!'),
-    (3, '2024-04-29 02:25:00-03', 'Wake up 3!'),
-    (4, '2024-04-29 02:25:00-03', 'Wake up 4!');
+    users_service.alarms (id_user, date_time, content)
+VALUES (1, '2024-04-30 00:50:00-03', 'Wake up 1!'),
+    (1, '2024-04-30 00:50:00-03', 'Wake up 2!'),
+    (1, '2024-04-30 00:50:00-03', 'Wake up 3!'),
+    (1, '2024-04-30 00:50:00-03', 'Wake up 4!');
 
 -- SELECT users_service.alarms.id, users_service.alarms.content, users_service.users.device_token
 -- FROM users_service.alarms 

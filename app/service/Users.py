@@ -1,5 +1,6 @@
-from exceptions.UserException import UserNotFound, InvalidData, InvalidURL
+from exceptions.UserException import ResourceNotFound, InvalidData, InvalidURL
 from exceptions.LoginException import AuthenticationError
+from exceptions.UserException import ForbiddenUser
 from models.users import User
 from repository.Users import UsersRepository
 import requests
@@ -18,7 +19,7 @@ class UsersService:
     def get_user(self, user_id: int):
         user = self.user_repository.get_user(user_id)
         if not user:
-            raise UserNotFound(user_id)
+            raise ResourceNotFound(user_id, "User")
         return user
 
     def get_all_users(self):
@@ -48,6 +49,45 @@ class UsersService:
                 raise InvalidURL("Invalid photo URL")
         try:
             self.user_repository.edit_user(user_id, filtered_update_data)
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
+
+    def create_notification(self, user_id: int, notification_data: dict):
+        try:
+            self.user_repository.create_notification(user_id,
+                                                     notification_data)
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
+
+    def get_notifications(self, user_id: int):
+        return self.user_repository.get_notifications(user_id)
+
+    def update_notification(self, user_id: int, notification_id: int,
+                            update_data: dict):
+        notification_owner = self.user_repository.\
+            get_notification_owner(notification_id)
+        if user_id != notification_owner:
+            raise ForbiddenUser()
+        try:
+            self.user_repository.edit_notification(notification_id,
+                                                   update_data)
+        except Exception as e:
+            self.user_repository.rollback()
+            raise e
+
+    def delete_notification(self, user_id: int, notification_id: int):
+        notification_owner = self.user_repository.\
+            get_notification_owner(notification_id)
+
+        if notification_owner is None:
+            raise ResourceNotFound(notification_id, "Notification")
+
+        if user_id != notification_owner:
+            raise ForbiddenUser()
+        try:
+            self.user_repository.delete_notification(notification_id)
         except Exception as e:
             self.user_repository.rollback()
             raise e

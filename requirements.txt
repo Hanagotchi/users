@@ -7,5 +7,9 @@ SQLAlchemy
 requests_oauthlib
 pyjwt
 httpx
+APScheduler>=3.10,<4.0
+arq
+pytz
+python-jose
 pytest
 mock

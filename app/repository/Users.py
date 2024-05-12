@@ -4,8 +4,12 @@ from os import environ
 from typing import Optional
 from app.models.database import Base
 from app.models.users import User
-from datetime import date
+from app.models.alarms import Alarm
+from datetime import date, datetime
 from .sql_exception_handling import withSQLExceptionsHandle
+from app.logs import init_logging
+
+logger = init_logging('user-repository')
 
 
 class UsersRepository:
@@ -91,6 +95,69 @@ class UsersRepository:
 
         self.session.commit()
         return user
+
+    @withSQLExceptionsHandle()
+    def create_notification(self, user_id: int, notification_data: dict):
+        alarm = Alarm(**notification_data, id_user=user_id)
+        self.session.add(alarm)
+        self.session.commit()
+        return alarm
+
+    @withSQLExceptionsHandle()
+    def get_notification_owner(self, notification_id):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        return alarm.id_user if alarm else None
+
+    @withSQLExceptionsHandle()
+    def edit_notification(self, notification_id, update_data):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        for field, value in update_data.items():
+            setattr(alarm, field, value)
+
+        self.session.commit()
+        return alarm
+
+    @withSQLExceptionsHandle()
+    def get_notifications(self, user_id: int):
+        alarm = self.session.query(Alarm).filter_by(id_user=user_id).all()
+        return self.__parse_result(alarm)
+
+    @withSQLExceptionsHandle()
+    def delete_notification(self, notification_id):
+        alarm = self.session.query(Alarm).filter_by(
+            id=notification_id).first()
+        self.session.delete(alarm)
+        self.session.commit()
+
+    @withSQLExceptionsHandle()
+    def get_users_to_notify(self,
+                            date_time: datetime) -> list[tuple[int,
+                                                               str,
+                                                               str]]:
+        """
+        Retrieves a list of tuples containing the alarm id, content and the
+        device_token of users who have an alarm scheduled for the
+        given datetime.
+        Args:
+            date_time (datetime): The date and time in ISO 8601 format with
+            timezone specified. For example, "2021-10-05T10:00:00-03:00"
+            represents October 5th, 2021 at 10:00 AM in Argentina Time
+            Zone (UTC-3). Seconds and microseconds are ignored.
+        Returns:
+            List[Tuple[int, str, str]]: A list of tuples containing
+            the alarm id, the alarm content, and the user's device_token.
+        """
+        date_time = date_time.replace(second=0, microsecond=0)
+        logger.info(f"Searching for alarms at {date_time}")
+        query = self.session.query(Alarm.id,
+                                   Alarm.content,
+                                   User.device_token)\
+                            .join(User, User.id == Alarm.id_user)\
+                            .filter(Alarm.date_time == date_time)
+        result = query.all()
+        return result
 
     def __parse_result(self, result):
         if not result:

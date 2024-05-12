@@ -1,6 +1,7 @@
 from datetime import date
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from typing import Optional, Dict
+from datetime import datetime
 
 
 class UserSchema(BaseModel):
@@ -40,3 +41,25 @@ class UpdateUserSchema(BaseModel):
     nickname: Optional[str] = None
     biography: Optional[str] = None
     device_token: Optional[str] = None
+
+
+class CreateNotificationSchema(BaseModel):
+    date_time: datetime = Field(..., alias='date_time')
+    content: str = Field(..., max_length=128)
+
+    @validator('date_time')
+    def validate_date_time(cls, v):
+        if v.minute % 5 != 0:
+            raise ValueError('Minutes must be multiples of 5')
+        return v
+
+
+class UpdateNotificationSchema(BaseModel):
+    date_time: Optional[datetime] = Field(..., alias='date_time')
+    content: Optional[str] = Field(..., max_length=128)
+
+    @validator('date_time')
+    def validate_date_time(cls, v):
+        if v.minute % 5 != 0:
+            raise ValueError('Minutes must be multiples of 5')
+        return v

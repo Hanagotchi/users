@@ -7,7 +7,7 @@ from unittest.mock import Mock, MagicMock
 from app.repository.Users import UsersRepository
 from app.schemas.Schemas import UserSchema, CreateUserSchema
 from app.service.Users import UsersService
-from app.exceptions.UserException import InvalidData
+from app.exceptions.UserException import InvalidData, UserNotFound, InvalidURL
 
 
 @pytest.fixture
@@ -71,6 +71,14 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(user, john)
         mock_db.get_user.assert_called_once_with(1)
 
+    def test_raise_user_not_found(self):
+        attr_db = {"get_user.return_value": None}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(UserNotFound):
+            service.get_user(10)
+
     def test_get_all_users(self):
         attr_db = {"get_all_users.return_value": [john, alice]}
         mock_db = get_mock(UsersRepository, attr_db)
@@ -104,12 +112,8 @@ class ServiceTests(unittest.TestCase):
         mock_db.create_user.assert_called_once()
         mock_db.rollback.assert_not_called()
 
-    def test_fail_if_invalid_location(self):
-        attr_db = {
-            # "add.return_value": None,
-            # "create_user.return_value": {"id": 3, "name": "Alice", "email": "alice@mail.com"},
-            "rollback.return_value": None
-        }
+    def test_create_fails_if_invalid_location(self):
+        attr_db = {"rollback.return_value": None}
         mock_db = get_mock(UsersRepository, attr_db)
         service = UsersService(mock_db)
         invalid_user = CreateUserSchema(name="Alice", email="alice@mail.com", location={"lat": 20})
@@ -117,3 +121,25 @@ class ServiceTests(unittest.TestCase):
         with self.assertRaises(InvalidData):
             service.create_user(invalid_user.dict())
             mock_db.add.assert_not_called()
+
+    def test_update_user(self):
+        attr_db = {
+            "add.return_value": None,
+            "edit_user.return_value": None,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        service.update_user(1, {"nickname": "alice"})
+
+        mock_db.edit_user.assert_called_once()
+        mock_db.rollback.assert_not_called()
+
+    def test_update_fails_if_invalid_location(self):
+        attr_db = {"edit_user.return_value": None}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        invalid_update = {"photo": "invalidlink"}
+
+        with self.assertRaises(InvalidURL):
+            service.update_user(1, invalid_update)

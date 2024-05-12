@@ -1,1 +1,1 @@
-from .Users import UsersRepository
+from .Users import UsersRepository  # noqa: F401

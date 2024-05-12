@@ -1,1 +1,1 @@
-from .Users import UsersService
+from .Users import UsersService  # noqa: F401

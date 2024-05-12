@@ -1,11 +1,13 @@
+import unittest
 from datetime import date
 
 import pytest
 from unittest.mock import Mock, MagicMock
 
 from app.repository.Users import UsersRepository
-from app.schemas.Schemas import UserSchema
+from app.schemas.Schemas import UserSchema, CreateUserSchema
 from app.service.Users import UsersService
+from app.exceptions.UserException import InvalidData
 
 
 @pytest.fixture
@@ -39,13 +41,79 @@ john = UserSchema(
     device_token="d3vic2to0k3n"
 )
 
+alice = UserSchema(
+    id=2,
+    name="Alice",
+    email="alice@mail.com",
+    gender="female",
+    photo="link.com",
+    birthdate=date(1990, 5, 10),
+    location={},
+    nickname="alice",
+    biography="una tipa",
+    device_token="d3vic2to0k3n"
+)
 
-def test_get_user(mock_user_repository):
-    attr_db = {
-        "get_user.return_value": john}
-    mock_db = get_mock(UsersRepository, attr_db)
-    service = UsersService(mock_db)
-    user = service.get_user(1)
+new_user = CreateUserSchema(
+    name="Alice",
+    email="alice@mail.com",
+    location={"lat": 20, "long": 100}
+)
 
-    assert user == john
-    mock_db.get_user.assert_called_once_with(1)
+
+class ServiceTests(unittest.TestCase):
+    def test_get_user(self):
+        attr_db = {"get_user.return_value": john}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        user = service.get_user(1)
+
+        self.assertEqual(user, john)
+        mock_db.get_user.assert_called_once_with(1)
+
+    def test_get_all_users(self):
+        attr_db = {"get_all_users.return_value": [john, alice]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        users = service.get_all_users()
+
+        self.assertEqual(len(users), 2)
+        mock_db.get_all_users.assert_called_once()
+
+    def test_get_users_by_id(self):
+        attr_db = {"get_users_by_ids.return_value": [john, alice]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        users = service.get_users_by_ids([1, 2])
+
+        self.assertTrue(users.__contains__(john))
+        self.assertTrue(users.__contains__(alice))
+        mock_db.get_users_by_ids.assert_called_once_with([1, 2])
+
+    def test_create_user(self):
+        attr_db = {
+            "add.return_value": None,
+            "create_user.return_value": {"id": 3, "name": "Alice", "email": "alice@mail.com"},
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        user = service.create_user(new_user.dict())
+
+        self.assertEqual(user["name"], "Alice")
+        mock_db.create_user.assert_called_once()
+        mock_db.rollback.assert_not_called()
+
+    def test_fail_if_invalid_location(self):
+        attr_db = {
+            # "add.return_value": None,
+            # "create_user.return_value": {"id": 3, "name": "Alice", "email": "alice@mail.com"},
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        invalid_user = CreateUserSchema(name="Alice", email="alice@mail.com", location={"lat": 20})
+
+        with self.assertRaises(InvalidData):
+            service.create_user(invalid_user.dict())
+            mock_db.add.assert_not_called()

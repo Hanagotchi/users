@@ -1,7 +1,7 @@
-from exceptions.UserException import UserNotFound, InvalidData, InvalidURL
-from exceptions.LoginException import AuthenticationError
-from models.users import User
-from repository.Users import UsersRepository
+from app.exceptions.UserException import UserNotFound, InvalidData, InvalidURL
+from app.exceptions.LoginException import AuthenticationError
+from app.models.users import User
+from app.repository.Users import UsersRepository
 import requests
 import os
 import re

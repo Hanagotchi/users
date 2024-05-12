@@ -2,8 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from os import environ
 from typing import Optional
-from models.database import Base
-from models.users import User
+from app.models.database import Base
+from app.models.users import User
 from datetime import date
 from .sql_exception_handling import withSQLExceptionsHandle
 

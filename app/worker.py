@@ -1,15 +1,24 @@
 import os
 import asyncio
+import json
+
 from arq import Worker
 from logs import init_logging
 from httpx import AsyncClient
 from datetime import datetime
 from arq.connections import RedisSettings
 from repository.Users import UsersRepository
+from async_firebase import AsyncFirebaseClient
+from async_firebase import messages
 
 logger = init_logging('worker')
 redis_url = os.environ.get('REDIS_URL')
 TIMEOUT_SECS_HTTPX_CLIENT = 30
+
+client = AsyncFirebaseClient()
+firebase_credentials = os.environ.get('FIREBASE_CREDENTIALS')
+parsed_credentials = json.loads(firebase_credentials)
+client.creds_from_service_account_info(parsed_credentials)
 
 
 async def send_notification(ctx: Worker,
@@ -18,25 +27,14 @@ async def send_notification(ctx: Worker,
                             date_time: datetime):
     logger.info(f"Sending alarm notification to "
                 f"{device_token} with content: {content} at {date_time}")
-    # este es un ejemplo usando httpx para hacer un request a un endpoint
-    # de forma asincrona,
-    # simulando que es un request a firebase para enviar una notificacion
 
-    secs_delay = 1
-    random_value = int(datetime.now().timestamp())
-    session: AsyncClient = ctx['session']
-    url = 'https://httpbin.org/delay/%s' % secs_delay
-    response = await session.get(url)
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f'[{random_value}] [{now}] Succesfuly called'
-                f' firebase endpoint. Response: {response.json()}')
-
-    # buscar que el endpoint de firebase para enviar notificaciones
-    # sea ASYNC, asi no bloquea el worker y se logra aprovechar
-    # el envio de notificaciones en paralelo con la programacion asincrona
-    #
-    # ...si hubiera que hacerlo sincrono, el llamado a firebase
-    # terminaria siendo secuencial para N notificaciones, y no es eficiente...
+    response = await client.\
+        send(message=messages.Message(token=device_token,
+                                      notification=messages.
+                                      Notification(title="Recordatorio",
+                                                   body=content)))
+    logger.info(f"Notification sent to {device_token}")
+    logger.debug(f"Response client.push: {response}")
 
 
 async def alarm_manager(ctx: Worker, date_time: datetime):

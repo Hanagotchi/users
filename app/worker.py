@@ -1,5 +1,6 @@
 import os
 import asyncio
+import json
 from arq import Worker
 from logs import init_logging
 from httpx import AsyncClient
@@ -14,8 +15,8 @@ TIMEOUT_SECS_HTTPX_CLIENT = 30
 
 client = AsyncFirebaseClient()
 firebase_credentials = os.environ.get('FIREBASE_CREDENTIALS')
-client.creds_from_service_account_info(firebase_credentials)
-
+parsed_credentials = json.loads(firebase_credentials)
+client.creds_from_service_account_info(parsed_credentials)
 
 async def send_notification(ctx: Worker,
                             device_token: str,

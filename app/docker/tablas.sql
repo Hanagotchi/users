@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users_service.users (
     photo VARCHAR(255),
     birthdate DATE,
     location JSONB,
-    nickname VARCHAR(30),
+    nickname VARCHAR(30) UNIQUE,
     biography VARCHAR(255),
     device_token VARCHAR(255)
 );

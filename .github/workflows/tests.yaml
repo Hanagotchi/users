@@ -27,9 +27,9 @@ jobs:
       - name: Run tests & Coverage file
         run: |
           python -m venv venv
-          source .venv/bin/activate
+          source venv/bin/activate
           pytest
-          pytest --cache-clear --cov=app app/ --cov-report=xml > pytest-coverage.txt
+          pytest --cache-clear --cov=app tests/ --cov-report=xml > pytest-coverage.txt
         env:
           DATABASE_URL: postgresql://pepe
           PYTHONPATH: ./app

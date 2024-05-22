@@ -1,5 +1,8 @@
 default: docker-compose-up
 
+docker-test:
+	docker build -t test-users -f Dockerfile.test . && docker run test-users && docker rmi test-users -f
+
 all:
 
 create-network:

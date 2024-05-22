@@ -29,7 +29,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pytest
-          pytest --cache-clear --cov=app tests/ --cov-report=xml > pytest-coverage.txt
+          pytest --cache-clear --cov=app app/tests/ --cov-report=xml > pytest-coverage.txt
         env:
           DATABASE_URL: postgresql://pepe
           PYTHONPATH: ./app

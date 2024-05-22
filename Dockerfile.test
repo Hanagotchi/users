@@ -12,6 +12,6 @@ RUN pip install -r requirements.txt
 
 EXPOSE ${PORT}
 
-COPY app/ .
+COPY . .
 
-CMD ["sh", "-c", "pytest"]
+CMD ["sh", "-c","DATABASE_URL=postgresql://user:1234@sql:5432/users", "PYTHONPATH=./app", "pytest"]

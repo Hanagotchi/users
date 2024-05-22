@@ -102,7 +102,8 @@ class ServiceTests(unittest.TestCase):
     def test_create_user(self):
         attr_db = {
             "add.return_value": None,
-            "create_user.return_value": {"id": 3, "name": "Alice", "email": "alice@mail.com"},
+            "create_user.return_value": {"id": 3, "name": "Alice",
+                                         "email": "alice@mail.com"},
             "rollback.return_value": None
         }
         mock_db = get_mock(UsersRepository, attr_db)
@@ -117,7 +118,8 @@ class ServiceTests(unittest.TestCase):
         attr_db = {"rollback.return_value": None}
         mock_db = get_mock(UsersRepository, attr_db)
         service = UsersService(mock_db)
-        invalid_user = CreateUserSchema(name="Alice", email="alice@mail.com", location={"lat": 20})
+        invalid_user = CreateUserSchema(name="Alice", email="alice@mail.com",
+                                        location={"lat": 20})
 
         with self.assertRaises(InvalidData):
             service.create_user(invalid_user.dict())

@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import unittest
 from datetime import date
 
@@ -10,8 +9,6 @@ from repository.Users import UsersRepository
 from schemas.Schemas import CreateUserSchema, UserSchema
 from service.Users import UsersService
 from exceptions.UserException import InvalidData, ResourceNotFound, InvalidURL
-
-load_dotenv()
 
 
 @pytest.fixture

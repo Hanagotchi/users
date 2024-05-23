@@ -6,9 +6,19 @@ import pytest
 from unittest.mock import Mock, MagicMock
 
 from repository.Users import UsersRepository
-from schemas.Schemas import CreateNotificationSchema, CreateUserSchema, UserSchema
 from service.Users import UsersService
-from exceptions.UserException import ForbiddenUser, InvalidData, ResourceNotFound, InvalidURL
+from schemas.Schemas import (
+    CreateNotificationSchema,
+    CreateUserSchema,
+    UserSchema
+)
+
+from exceptions.UserException import (
+    ForbiddenUser,
+    InvalidData,
+    ResourceNotFound,
+    InvalidURL
+)
 
 
 @pytest.fixture

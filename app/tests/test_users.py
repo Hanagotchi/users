@@ -8,7 +8,7 @@ from unittest.mock import Mock, MagicMock
 from repository.Users import UsersRepository
 from schemas.Schemas import CreateNotificationSchema, CreateUserSchema, UserSchema
 from service.Users import UsersService
-from exceptions.UserException import InvalidData, ResourceNotFound, InvalidURL
+from exceptions.UserException import ForbiddenUser, InvalidData, ResourceNotFound, InvalidURL
 
 
 @pytest.fixture
@@ -199,9 +199,67 @@ class ServiceTests(unittest.TestCase):
         mock_db.create_notification.assert_called_once()
         mock_db.rollback.assert_not_called()
 
+    def test_delete_notification(self):
+        attr_db = {
+            "delete_notification.return_value": None,
+            "get_notification_owner.return_value": 1,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        service.delete_notification(1, 1)
+
+        mock_db.delete_notification.assert_called_once()
+        mock_db.rollback.assert_not_called()
+
+    def test_delete_notification_fails_if_not_authorized(self):
+        attr_db = {
+            "delete_notification.return_value": None,
+            "get_notification_owner.return_value": 2,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(ForbiddenUser):
+            service.delete_notification(1, 1)
+
+    def test_delete_fails_if_notification_doesnt_exist(self):
+        attr_db = {
+            "delete_notification.return_value": None,
+            "get_notification_owner.return_value": None,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(ResourceNotFound):
+            service.delete_notification(1, 1)
+
+    def test_update_notification(self):
+        attr_db = {
+            "edit_notification.return_value": None,
+            "get_notification_owner.return_value": 1,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        service.update_notification(
+            1,
+            1,
+            CreateNotificationSchema(
+                date_time=datetime(2023, 6, 17, 10, 30),
+                content="Alarm"
+            )
+        )
+
+        mock_db.edit_notification.assert_called_once()
+        mock_db.rollback.assert_not_called()
+
     def test_create_notification_rollback_if_failed(self):
         attr_db = {
             "create_notification.side_effect": Exception(),
+            "get_notification_owner.return_value": 1,
             "rollback.return_value": None
         }
         mock_db = get_mock(UsersRepository, attr_db)
@@ -214,5 +272,33 @@ class ServiceTests(unittest.TestCase):
                     date_time=datetime(2023, 5, 17, 10, 30),
                     content="Alarm")
             )
+
+        mock_db.rollback.assert_called_once()
+
+    def test_delete_notification_rollback_if_failed(self):
+        attr_db = {
+            "delete_notification.side_effect": Exception(),
+            "get_notification_owner.return_value": 1,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(Exception):
+            service.delete_notification(1, 1)
+
+        mock_db.rollback.assert_called_once()
+
+    def test_update_notification_rollback_if_failed(self):
+        attr_db = {
+            "edit_notification.side_effect": Exception(),
+            "get_notification_owner.return_value": 1,
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(Exception):
+            service.update_notification(1, 1, {})
 
         mock_db.rollback.assert_called_once()

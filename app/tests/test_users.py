@@ -1,12 +1,12 @@
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 
 import pytest
 from unittest.mock import Mock, MagicMock
 
 from repository.Users import UsersRepository
-from schemas.Schemas import CreateUserSchema, UserSchema
+from schemas.Schemas import CreateNotificationSchema, CreateUserSchema, UserSchema
 from service.Users import UsersService
 from exceptions.UserException import InvalidData, ResourceNotFound, InvalidURL
 
@@ -114,6 +114,19 @@ class ServiceTests(unittest.TestCase):
         mock_db.create_user.assert_called_once()
         mock_db.rollback.assert_not_called()
 
+    def test_create_user_rollback_if_failed(self):
+        attr_db = {
+            "create_user.side_effect": Exception(),
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(Exception):
+            service.create_user(new_user.dict())
+
+        mock_db.rollback.assert_called_once()
+
     def test_create_fails_if_invalid_location(self):
         attr_db = {"rollback.return_value": None}
         mock_db = get_mock(UsersRepository, attr_db)
@@ -138,6 +151,19 @@ class ServiceTests(unittest.TestCase):
         mock_db.edit_user.assert_called_once()
         mock_db.rollback.assert_not_called()
 
+    def test_update_user_rollback_if_failed(self):
+        attr_db = {
+            "edit_user.side_effect": Exception(),
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(Exception):
+            service.update_user(1, {"nickname": "alice"})
+
+        mock_db.rollback.assert_called_once()
+
     def test_update_fails_if_invalid_location(self):
         attr_db = {"edit_user.return_value": None}
         mock_db = get_mock(UsersRepository, attr_db)
@@ -146,3 +172,47 @@ class ServiceTests(unittest.TestCase):
 
         with self.assertRaises(InvalidURL):
             service.update_user(1, invalid_update)
+
+    def test_create_notification(self):
+        attr_db = {
+            "create_notification.return_value": None,
+            "get_notifications.return_value": [
+                {
+                    "datetime": datetime(2023, 5, 17, 10, 30),
+                    "content": 'Alarm'
+                }
+            ],
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        service.create_notification(
+            1,
+            CreateNotificationSchema(date_time=datetime(2023, 5, 17, 10, 30),
+                                     content="Alarm")
+        )
+
+        notifications = service.get_notifications(1)
+        notification = notifications.pop()
+
+        self.assertEqual(notification["content"], "Alarm")
+        mock_db.create_notification.assert_called_once()
+        mock_db.rollback.assert_not_called()
+
+    def test_create_notification_rollback_if_failed(self):
+        attr_db = {
+            "create_notification.side_effect": Exception(),
+            "rollback.return_value": None
+        }
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+
+        with self.assertRaises(Exception):
+            service.create_notification(
+                1,
+                CreateNotificationSchema(
+                    date_time=datetime(2023, 5, 17, 10, 30),
+                    content="Alarm")
+            )
+
+        mock_db.rollback.assert_called_once()

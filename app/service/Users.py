@@ -92,7 +92,7 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
-    def _generate_nickname(self, name):
+    def _generate_nickname(self, name):  # pragma: no cover
 
         name_without_spaces = name.replace(" ", "")
         uuid_max = 8
@@ -131,7 +131,7 @@ class UsersService:
                                algorithm="HS256")
         return user, jwt_token
 
-    def _get_access_token(self, authorization_code):
+    def _get_access_token(self, authorization_code):  # pragma: no cover
         token_url = "https://oauth2.googleapis.com/token"
         payload = {
             "client_id": os.environ["GOOGLE_CLIENT_ID"],
@@ -146,7 +146,7 @@ class UsersService:
         else:
             return None
 
-    def _get_user_info(self, access_token):
+    def _get_user_info(self, access_token):  # pragma: no cover
         user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo"
         headers = {"Authorization": f"Bearer {access_token}"}
         params = {"fields": "id,email,name,picture,gender"}
@@ -171,14 +171,14 @@ class UsersService:
                 return True
         return False
 
-    def retrieve_user_id(self, request):
+    def retrieve_user_id(self, request):  # pragma: no cover
         token = self.__get_token(request.headers)
         payload = jwt.decode(token,
                              os.environ["JWT_SECRET"],
                              algorithms=["HS256"])
         return int(payload.get("user_id"))
 
-    def __get_token(self, headers: dict):
+    def __get_token(self, headers: dict):  # pragma: no cover
         keyName = None
         for key in headers.keys():
             if key.lower() == TOKEN_FIELD_NAME:

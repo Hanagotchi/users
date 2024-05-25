@@ -1,8 +1,5 @@
 default: docker-compose-up
 
-docker-test:
-	echo "coberash 100%"
-
 all:
 
 create-network:

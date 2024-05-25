@@ -12,3 +12,6 @@ arq
 pytz
 python-jose
 async-firebase
+pytest
+mock
+pytest-cov

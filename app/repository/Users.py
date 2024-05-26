@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from os import environ
 from typing import Optional
-from app.models.database import Base
+from models.database import Base
 from models.users import User
 from models.alarms import Alarm
 from datetime import date, datetime

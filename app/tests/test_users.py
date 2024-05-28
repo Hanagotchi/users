@@ -90,7 +90,7 @@ class ServiceTests(unittest.TestCase):
         with self.assertRaises(ResourceNotFound):
             service.get_user(10)
 
-    def test_get_users(self):
+    def test_get_users_without_params(self):
         attr_db = {"get_all_users.return_value": [john, alice]}
         mock_db = get_mock(UsersRepository, attr_db)
         service = UsersService(mock_db)
@@ -100,15 +100,71 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(len(users), 2)
         mock_db.get_all_users.assert_called_once()
 
-    def test_get_users_by_id(self):
+    def test_get_users_with_limit_and_offset(self):
+        attr_db = {"get_all_users.return_value": [john]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        query_params = {"limit": 1, "offset": 0}
+        users = service.get_users(query_params)
+
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0], john)
+        mock_db.get_all_users.assert_called_once_with(1, 0)
+
+    def test_get_users_by_ids(self):
         attr_db = {"get_users_by_ids.return_value": [john, alice]}
         mock_db = get_mock(UsersRepository, attr_db)
         service = UsersService(mock_db)
-        users = service.get_users_by_ids([1, 2])
+        query_params = {"ids": "1,2"}
+        users = service.get_users(query_params)
 
-        self.assertTrue(users.__contains__(john))
-        self.assertTrue(users.__contains__(alice))
-        mock_db.get_users_by_ids.assert_called_once_with([1, 2])
+        self.assertEqual(len(users), 2)
+        self.assertTrue(john in users)
+        self.assertTrue(alice in users)
+        mock_db.get_users_by_ids.assert_called_once_with(['1', '2'], 200, 0)
+
+    def test_get_users_by_nickname(self):
+        attr_db = {"get_user_by_nickname.return_value": [john]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        query_params = {"nickname": "john"}
+        users = service.get_users(query_params)
+
+        self.assertEqual(len(users), 1)
+        self.assertTrue(john in users)
+        mock_db.get_user_by_nickname.assert_called_once_with("john", 200, 0)
+
+    def test_get_users_by_ids_invalid_ids(self):
+        attr_db = {"get_users_by_ids.return_value": []}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        query_params = {"ids": "abc,2,,"}
+        users = service.get_users(query_params)
+
+        self.assertEqual(len(users), 0)
+        mock_db.get_users_by_ids.assert_called_once_with(['2'], 200, 0)
+
+    def test_get_users_by_nickname_with_limit_and_offset(self):
+        attr_db = {"get_user_by_nickname.return_value": [john]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        query_params = {"nickname": "john", "limit": 1, "offset": 0}
+        users = service.get_users(query_params)
+
+        self.assertEqual(len(users), 1)
+        self.assertTrue(john in users)
+        mock_db.get_user_by_nickname.assert_called_once_with("john", 1, 0)
+
+    def test_get_users_by_ids_with_limit_and_offset(self):
+        attr_db = {"get_users_by_ids.return_value": [john]}
+        mock_db = get_mock(UsersRepository, attr_db)
+        service = UsersService(mock_db)
+        query_params = {"ids": "1", "limit": 1, "offset": 0}
+        users = service.get_users(query_params)
+
+        self.assertEqual(len(users), 1)
+        self.assertTrue(john in users)
+        mock_db.get_users_by_ids.assert_called_once_with(['1'], 1, 0)
 
     def test_create_user(self):
         attr_db = {

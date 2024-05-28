@@ -27,7 +27,6 @@ class UsersController:
                 content=jsonable_encoder({
                     "message": users})
                 )
-        print("No users found")
         return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     async def handle_create_user(self, user_data: dict):

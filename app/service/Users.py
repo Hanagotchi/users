@@ -124,7 +124,6 @@ class UsersService:
         user = self.user_repository.get_user_by_email(user_info["email"])
 
         if user is None:
-            print(f"user info: {user_info}")
             if "name" in user_info:
                 name = user_info["name"]
             else:

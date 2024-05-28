@@ -90,11 +90,11 @@ class ServiceTests(unittest.TestCase):
         with self.assertRaises(ResourceNotFound):
             service.get_user(10)
 
-    def test_get_all_users(self):
-        attr_db = {"get_all_users.return_value": [john, alice]}
+    def test_get_users(self):
+        attr_db = {"get_users.return_value": [john, alice]}
         mock_db = get_mock(UsersRepository, attr_db)
         service = UsersService(mock_db)
-        users = service.get_all_users()
+        users = service.get_users()
 
         self.assertEqual(len(users), 2)
         mock_db.get_all_users.assert_called_once()

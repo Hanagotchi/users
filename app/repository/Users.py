@@ -45,12 +45,18 @@ class UsersRepository:
         user = self.session.query(User).filter_by(email=email).first()
         return user.__dict__ if user else None
 
-    def get_all_users(self, ids: list = None):
-        users = self.session.query(User).all()
+    def get_all_users(self, limit: int, offset: int):
+        users = self.session.query(User).offset(offset).limit(limit).all()
         return self.__parse_result(users)
 
-    def get_users_by_ids(self, ids: list):
-        users = self.session.query(User).filter(User.id.in_(ids)).all()
+    def get_users_by_ids(self, ids: list, limit: int, offset: int):
+        users = self.session.query(User).filter(User.id.in_(ids)).offset(
+            offset).limit(limit).all()
+        return self.__parse_result(users)
+
+    def get_user_by_nickname(self, nickname: str, limit: int, offset: int):
+        users = self.session.query(User).filter(User.nickname.ilike(
+            f"{nickname}%")).offset(offset).limit(limit).all()
         return self.__parse_result(users)
 
     @withSQLExceptionsHandle()

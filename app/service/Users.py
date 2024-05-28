@@ -22,8 +22,20 @@ class UsersService:
             raise ResourceNotFound(user_id, "User")
         return user
 
-    def get_all_users(self):
-        return self.user_repository.get_all_users()
+    def get_users(self, query_params: dict):
+        ids = query_params.get("ids", None)
+        nickname = query_params.get("nickname", None)
+        offset = query_params.get("offset", 0)
+        limit = query_params.get("limit", 200)
+
+        if ids:
+            ids = ids.split(",")
+            ids = [x for x in ids if x.isdigit()]
+            return self.user_repository.get_users_by_ids(ids, limit, offset)
+        if nickname:
+            return self.user_repository.get_user_by_nickname(nickname, limit,
+                                                             offset)
+        return self.user_repository.get_all_users(limit, offset)
 
     def get_users_by_ids(self, ids: list):
         return self.user_repository.get_users_by_ids(ids)

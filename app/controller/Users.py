@@ -1,4 +1,4 @@
-from fastapi import status
+from fastapi import status, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from external.Social import SocialService
@@ -19,27 +19,16 @@ class UsersController:
             })
         )
 
-    def handle_get_all_users(self, ids: list | None = None):
-        if ids:
-            ids = ids[0].split(",")
-            ids = [x for x in ids if x.isdigit()]
-            users = self.users_service.get_users_by_ids(ids)
+    def handle_get_users(self, query_params: dict):
+        users = self.users_service.get_users(query_params)
+        if users:
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
                 content=jsonable_encoder({
-                    "message": users,
-                    "status": status.HTTP_200_OK,
-                })
-            )
-        else:
-            users = self.users_service.get_all_users()
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content=jsonable_encoder({
-                    "message": users,
-                    "status": status.HTTP_200_OK,
-                }),
-            )
+                    "message": users})
+                )
+        print("No users found")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     async def handle_create_user(self, user_data: dict):
         result = self.users_service.create_user(user_data)

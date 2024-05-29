@@ -1,8 +1,8 @@
-from fastapi import Depends, FastAPI, Query
+from fastapi import Depends, FastAPI
 from controller.Users import UsersController
 from service.Users import UsersService
 from repository.Users import UsersRepository
-from typing import List, Annotated, Union
+from typing import Annotated
 from schemas.Schemas import (
     CreateUserSchema,
     UpdateUserSchema,
@@ -10,6 +10,7 @@ from schemas.Schemas import (
     CreateNotificationSchema,
     UpdateNotificationSchema
 )
+from query_params.QueryParams import GetUsersQueryParams
 from security.JWTBearer import get_current_user_id
 
 
@@ -30,13 +31,17 @@ def root():
 
 
 @app.get("/users/{user_id}", tags=["Users"])
-def get_users(user_id: int):
+def get_user(user_id: int):
     return users_controller.handle_get_user(user_id)
 
 
 @app.get("/users", tags=["Users"])
-def get_all_users(ids: Annotated[Union[List[str], None], Query()] = None):
-    return users_controller.handle_get_all_users(ids)
+def get_users(
+    query_params: GetUsersQueryParams = Depends(GetUsersQueryParams)
+):
+    return users_controller.handle_get_users(
+        query_params.get_query_params()
+        )
 
 
 @app.post("/users", tags=["Users"])

@@ -9,6 +9,8 @@ import re
 import jwt
 import uuid
 
+JWT_SECRET = os.environ.get("JWT_SECRET")
+HASH_ALGORITHM = os.environ.get("HASH_ALGORITHM")
 TOKEN_FIELD_NAME = "x-access-token"
 
 
@@ -104,6 +106,14 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
+    def get_user_auth(self, user_data):
+        token = user_data.get("token")
+        print(f"Token: {token}")
+        decoded_token = jwt.decode(token,
+                                   os.environ["JWT_SECRET"],
+                                   algorithms=["HS256"])
+        return {"user_id": decoded_token.get("user_id")}
+
     def _generate_nickname(self, name):  # pragma: no cover
 
         name_without_spaces = name.replace(" ", "")
@@ -140,6 +150,7 @@ class UsersService:
         jwt_token = jwt.encode(payload,
                                os.environ["JWT_SECRET"],
                                algorithm="HS256")
+        print(f"Token: {jwt_token}")
         return user, jwt_token
 
     def _get_access_token(self, authorization_code):  # pragma: no cover

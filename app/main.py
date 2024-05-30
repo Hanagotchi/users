@@ -31,7 +31,7 @@ def root():
     return {"message": "users service"}
 
 
-@app.post("/user", tags=["Auth"])
+@app.post("/users/token", tags=["Auth"])
 def get_user_auth(user_data: GetUserSchema):
     return users_controller.handle_get_user_auth(user_data.dict())
 

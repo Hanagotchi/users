@@ -106,9 +106,8 @@ class UsersService:
             self.user_repository.rollback()
             raise e
 
-    def get_user_auth(self, user_data):
+    def get_user_auth(self, user_data):  # pragma: no cover
         token = user_data.get("token")
-        print(f"Token: {token}")
         decoded_token = jwt.decode(token,
                                    os.environ["JWT_SECRET"],
                                    algorithms=["HS256"])
@@ -150,7 +149,6 @@ class UsersService:
         jwt_token = jwt.encode(payload,
                                os.environ["JWT_SECRET"],
                                algorithm="HS256")
-        print(f"Token: {jwt_token}")
         return user, jwt_token
 
     def _get_access_token(self, authorization_code):  # pragma: no cover

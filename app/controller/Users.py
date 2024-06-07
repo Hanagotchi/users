@@ -30,10 +30,10 @@ class UsersController:
                     })
                 )
         return JSONResponse(
-                status_code=status.HTTP_204_OK,
+                status_code=status.HTTP_204_NO_CONTENT,
                 content=jsonable_encoder({
                     "message": "no users found",
-                    "status": status.HTTP_204_OK,
+                    "status": status.HTTP_204_NO_CONTENT,
                     })
                 )
 

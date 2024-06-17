@@ -9,6 +9,8 @@ import re
 import jwt
 import uuid
 
+JWT_SECRET = os.environ.get("JWT_SECRET")
+HASH_ALGORITHM = os.environ.get("HASH_ALGORITHM")
 TOKEN_FIELD_NAME = "x-access-token"
 
 
@@ -103,6 +105,13 @@ class UsersService:
         except Exception as e:
             self.user_repository.rollback()
             raise e
+
+    def get_user_auth(self, user_data):  # pragma: no cover
+        token = user_data.get("token")
+        decoded_token = jwt.decode(token,
+                                   os.environ["JWT_SECRET"],
+                                   algorithms=["HS256"])
+        return {"user_id": decoded_token.get("user_id")}
 
     def _generate_nickname(self, name):  # pragma: no cover
 

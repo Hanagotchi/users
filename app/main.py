@@ -8,7 +8,8 @@ from schemas.Schemas import (
     UpdateUserSchema,
     LoginRequest,
     CreateNotificationSchema,
-    UpdateNotificationSchema
+    UpdateNotificationSchema,
+    GetUserSchema
 )
 from query_params.QueryParams import GetUsersQueryParams
 from security.JWTBearer import get_current_user_id
@@ -28,6 +29,11 @@ users_controller = UsersController(users_service)
 @app.get("/", tags=["Healthcheck"])
 def root():
     return {"message": "users service"}
+
+
+@app.post("/users/token", tags=["Auth"])
+def get_user_auth(user_data: GetUserSchema):
+    return users_controller.handle_get_user_auth(user_data.dict())
 
 
 @app.get("/users/{user_id}", tags=["Users"])

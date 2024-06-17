@@ -63,3 +63,7 @@ class UpdateNotificationSchema(BaseModel):
         if v.minute % 5 != 0:
             raise ValueError('Minutes must be multiples of 5')
         return v
+
+
+class GetUserSchema(BaseModel):
+    token: str

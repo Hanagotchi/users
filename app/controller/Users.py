@@ -113,3 +113,10 @@ class UsersController:
                 "status": status.HTTP_200_OK,
             }),
         )
+
+    def handle_get_user_auth(self, user_data: dict):
+        response = self.users_service.get_user_auth(user_data)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=response
+        )
